@@ -1,0 +1,118 @@
+datasource db {
+  provider = "postgresql"
+   
+  
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String       @id @default(uuid())
+  email         String       @unique
+  password      String
+  name          String?
+  avatar        String?
+  accumulatedXP Int          @default(0)
+  readingStreak Int          @default(0)
+  createdAt     DateTime     @default(now())
+  
+  orders        Order[]
+  notes         Note[]
+  readingLogs   ReadingLog[]
+  posts         Post[]
+  comments      Comment[]
+  replies       Reply[]
+}
+
+model Book {
+  id          String   @id @default(uuid())
+  title       String
+  author      String
+  price       Float
+  coverUrl    String
+  formats     String[] 
+  lore        String
+  rarity      String   
+  genre       String?
+  createdAt   DateTime @default(now())
+}
+
+model Note {
+  id        String   @id @default(uuid())
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ReadingLog {
+  id          String   @id @default(uuid())
+  hoursLogged Float
+  createdAt   DateTime @default(now())
+  userId      String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Order {
+  id            String         @id @default(uuid())
+  totalAmount   Float
+  paymentMethod String
+  status        String         @default("processing") 
+  createdAt     DateTime       @default(now())
+  userId        String
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trackingSteps TrackingStep[]
+}
+
+model TrackingStep {
+  id          String   @id @default(uuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  label       String   
+  description String
+  status      String   
+  createdAt   DateTime @default(now())
+}
+
+model Community {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  posts     Post[]
+}
+
+model Post {
+  id          String    @id @default(uuid())
+  content     String
+  voiceUrl    String?
+  likes       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  communityId String
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  comments    Comment[]
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  replies   Reply[]
+}
+
+model Reply {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  commentId String
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+}

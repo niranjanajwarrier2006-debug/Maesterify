@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAESTERIFY — A Premium Digital Book Sanctuary</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#121212;--bg2:#1b1b1b;--bg3:#242424;--bg4:#2e2e2e;
+  --border:#3a3228;--border2:#4a4238;
+  --text:#F4EFEA;--text2:#c8bfb4;--text3:#b8afa8;--text4:#7a706a;
+  --gold:#c8a96b;--gold2:#e8c98b;--gold3:#a8893b;
+  --danger:#b85454;--success:#4d8f64;--info:#5488b8;
+  --radius:8px;--radius2:12px;--radius3:20px;
+  --shadow:0 4px 24px rgba(0,0,0,.5);
+  --shadow2:0 8px 40px rgba(0,0,0,.7);
+  --font-head:'Cinzel Decorative',serif;
+  --font-sub:'Cinzel',serif;
+  --font-body:'EB Garamond',serif;
+  --font-alt:'Cormorant Garamond',serif;
+  --transition:all .3s cubic-bezier(.4,0,.2,1);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:16px;min-height:100vh;overflow-x:hidden;}
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--gold3);border-radius:3px;}
+button{cursor:pointer;border:none;background:none;font-family:var(--font-body);}
+input,textarea,select{font-family:var(--font-body);color:var(--text);background:var(--bg3);}
+a{color:var(--gold);text-decoration:none;}
+#audio-modal{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:32px;animation:fadeIn .5s ease;}
+#audio-modal h1{font-family:var(--font-head);font-size:clamp(1.8rem,5vw,3.5rem);color:var(--gold);text-align:center;line-height:1.2;}
+#audio-modal p{font-family:var(--font-alt);font-size:1.25rem;color:var(--text3);font-style:italic;text-align:center;max-width:500px;}
+.modal-glow{position:absolute;inset:0;background:radial-gradient(ellipse 60% 40% at 50% 50%,rgba(200,169,107,.08),transparent);pointer-events:none;}
+#audio-modal .cta-btn{font-family:var(--font-sub);font-size:1.1rem;padding:18px 52px;background:linear-gradient(135deg,var(--gold3),var(--gold),var(--gold2));color:#1a1200;font-weight:700;letter-spacing:.12em;border-radius:var(--radius3);transition:var(--transition);box-shadow:0 0 40px rgba(200,169,107,.4);}
+#audio-modal .cta-btn:hover{transform:translateY(-3px);box-shadow:0 0 60px rgba(200,169,107,.6);}
+.sigil{width:120px;height:120px;animation:spinSlow 12s linear infinite;}
+@keyframes spinSlow{to{transform:rotate(360deg);}}
+#toast-container{position:fixed;bottom:100px;right:24px;z-index:8000;display:flex;flex-direction:column;gap:10px;pointer-events:none;}
+.toast{background:var(--bg3);border:1px solid var(--border2);border-left:3px solid var(--gold);padding:14px 20px;border-radius:var(--radius);font-family:var(--font-sub);font-size:.85rem;color:var(--text2);box-shadow:var(--shadow2);animation:slideInRight .3s ease;min-width:260px;max-width:340px;}
+.toast.success{border-left-color:var(--success);}
+.toast.danger{border-left-color:var(--danger);}
+@keyframes slideInRight{from{transform:translateX(120%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+@keyframes fadeOut{to{opacity:0;transform:translateX(120%);}}
+#nav{position:sticky;top:0;z-index:7000;background:rgba(18,18,18,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 16px;}
+.nav-inner{display:flex;align-items:center;gap:0;overflow-x:auto;scrollbar-width:none;max-width:100%;}
+.nav-inner::-webkit-scrollbar{display:none;}
+.nav-logo{font-family:var(--font-head);font-size:1.1rem;color:var(--gold);white-space:nowrap;padding:18px 24px 18px 0;letter-spacing:.05em;flex-shrink:0;border-right:1px solid var(--border);margin-right:8px;}
+.nav-tab{font-family:var(--font-sub);font-size:.72rem;letter-spacing:.1em;color:var(--text3);padding:20px 14px;white-space:nowrap;transition:var(--transition);position:relative;flex-shrink:0;text-transform:uppercase;}
+.nav-tab:hover{color:var(--gold2);}
+.nav-tab.active{color:var(--gold);}
+.nav-tab.active::after{content:'';position:absolute;bottom:0;left:14px;right:14px;height:2px;background:var(--gold);border-radius:2px;}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:8px;flex-shrink:0;padding-left:16px;}
+.nav-icon-btn{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--bg3);border:1px solid var(--border);color:var(--gold);font-size:1rem;transition:var(--transition);}
+.nav-icon-btn:hover{background:var(--bg4);transform:translateY(-1px);}
+.cart-badge{position:absolute;top:-4px;right:-4px;background:var(--gold);color:#1a1200;font-size:.6rem;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-sub);font-weight:700;}
+.screen{display:none;min-height:calc(100vh - 64px);padding:0;}
+.screen.active{display:block;}
+.screen-header{text-align:center;padding:64px 24px 40px;position:relative;}
+.screen-header h2{font-family:var(--font-head);font-size:clamp(1.6rem,4vw,3rem);color:var(--gold);margin-bottom:12px;line-height:1.2;}
+.screen-header p{font-family:var(--font-alt);font-style:italic;font-size:1.15rem;color:var(--text3);max-width:560px;margin:0 auto;line-height:1.7;}
+.screen-divider{width:120px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:20px auto 0;}
+.hero{position:relative;overflow:hidden;height:520px;display:flex;align-items:center;justify-content:center;}
+.hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,#0a0806 0%,#1a140c 40%,#0e1015 100%);z-index:0;}
+.hero-particles{position:absolute;inset:0;z-index:1;pointer-events:none;}
+.hero-content{position:relative;z-index:2;text-align:center;padding:0 24px;}
+.hero-eyebrow{font-family:var(--font-sub);font-size:.8rem;letter-spacing:.25em;color:var(--gold3);text-transform:uppercase;margin-bottom:20px;}
+.hero-title{font-family:var(--font-head);font-size:clamp(2rem,6vw,4.5rem);color:var(--text);line-height:1.1;margin-bottom:20px;}
+.hero-title span{color:var(--gold);}
+.hero-sub{font-family:var(--font-alt);font-size:1.25rem;color:var(--text3);font-style:italic;margin-bottom:36px;}
+.hero-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+.btn-primary{background:linear-gradient(135deg,var(--gold3),var(--gold));color:#1a1200;font-family:var(--font-sub);font-size:.85rem;letter-spacing:.12em;padding:14px 36px;border-radius:var(--radius3);font-weight:700;transition:var(--transition);box-shadow:0 4px 20px rgba(200,169,107,.3);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(200,169,107,.5);}
+.btn-ghost{background:transparent;color:var(--gold);font-family:var(--font-sub);font-size:.85rem;letter-spacing:.12em;padding:13px 35px;border-radius:var(--radius3);font-weight:600;transition:var(--transition);border:1.5px solid var(--gold3);}
+.btn-ghost:hover{background:rgba(200,169,107,.1);transform:translateY(-2px);}
+.search-wrap{max-width:680px;margin:0 auto;position:relative;}
+.search-input{width:100%;padding:16px 56px 16px 24px;background:var(--bg2);border:1.5px solid var(--border2);border-radius:var(--radius3);color:var(--text);font-family:var(--font-body);font-size:1rem;outline:none;transition:var(--transition);}
+.search-input:focus{border-color:var(--gold3);box-shadow:0 0 0 3px rgba(200,169,107,.12);}
+.search-icon{position:absolute;right:20px;top:50%;transform:translateY(-50%);color:var(--gold3);font-size:1.1rem;pointer-events:none;}
+.search-results{position:absolute;top:calc(100% + 8px);left:0;right:0;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius2);z-index:100;max-height:320px;overflow-y:auto;display:none;}
+.search-results.open{display:block;}
+.search-item{padding:12px 20px;cursor:pointer;display:flex;align-items:center;gap:14px;transition:var(--transition);}
+.search-item:hover{background:var(--bg3);}
+.search-item-thumb{width:36px;height:48px;border-radius:4px;flex-shrink:0;}
+.search-item-info{flex:1;}
+.search-item-info h4{font-family:var(--font-sub);font-size:.85rem;color:var(--text);}
+.search-item-info p{font-size:.78rem;color:var(--text3);}
+.carousel-section{padding:48px 24px;max-width:1200px;margin:0 auto;}
+.section-title{font-family:var(--font-sub);font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold3);margin-bottom:8px;}
+.section-heading{font-family:var(--font-head);font-size:1.6rem;color:var(--text);margin-bottom:32px;}
+.carousel{position:relative;overflow:hidden;}
+.carousel-track{display:flex;gap:20px;transition:transform .5s cubic-bezier(.4,0,.2,1);}
+.carousel-btn{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;background:var(--bg3);border:1px solid var(--border2);color:var(--gold);font-size:1.2rem;z-index:2;transition:var(--transition);}
+.carousel-btn:hover{background:var(--bg4);border-color:var(--gold3);}
+.carousel-btn.prev{left:-10px;}
+.carousel-btn.next{right:-10px;}
+.book-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius2);overflow:hidden;transition:var(--transition);cursor:pointer;flex-shrink:0;width:200px;}
+.book-card:hover{transform:translateY(-6px);border-color:var(--gold3);box-shadow:0 12px 40px rgba(0,0,0,.6);}
+.book-cover{width:100%;height:280px;display:block;}
+.book-info{padding:16px;}
+.book-title{font-family:var(--font-sub);font-size:.85rem;color:var(--text);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.book-author{font-size:.8rem;color:var(--text3);margin-bottom:8px;font-style:italic;}
+.book-price{font-family:var(--font-sub);font-size:.9rem;color:var(--gold);font-weight:600;}
+.book-rarity{display:inline-block;font-size:.65rem;font-family:var(--font-sub);letter-spacing:.1em;padding:3px 8px;border-radius:3px;text-transform:uppercase;margin-bottom:6px;}
+.rarity-legendary{background:rgba(200,169,107,.15);color:var(--gold);border:1px solid rgba(200,169,107,.3);}
+.rarity-rare{background:rgba(84,136,184,.15);color:#88b8e8;border:1px solid rgba(84,136,184,.3);}
+.rarity-uncommon{background:rgba(77,143,100,.15);color:#88cf9f;border:1px solid rgba(77,143,100,.3);}
+.rarity-common{background:rgba(120,112,106,.15);color:var(--text3);border:1px solid rgba(120,112,106,.3);}
+.catalog-layout{display:grid;grid-template-columns:280px 1fr;gap:0;min-height:calc(100vh - 64px);}
+.filter-sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:32px 24px;position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto;}
+.filter-sidebar h3{font-family:var(--font-sub);font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold3);margin-bottom:16px;}
+.filter-group{margin-bottom:28px;}
+.filter-label{font-family:var(--font-sub);font-size:.78rem;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;margin-bottom:12px;display:block;}
+.filter-option{display:flex;align-items:center;gap:10px;padding:6px 0;cursor:pointer;color:var(--text2);font-size:.88rem;transition:color .2s;}
+.filter-option:hover{color:var(--gold);}
+.filter-option input[type=checkbox]{accent-color:var(--gold);width:14px;height:14px;}
+.catalog-main{padding:32px 24px;}
+.catalog-search-bar{display:flex;gap:12px;margin-bottom:24px;}
+.catalog-search-bar input{flex:1;padding:12px 20px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);outline:none;font-size:.95rem;transition:var(--transition);}
+.catalog-search-bar input:focus{border-color:var(--gold3);}
+.catalog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:20px;}
+.catalog-count{font-family:var(--font-sub);font-size:.78rem;color:var(--text3);margin-bottom:16px;letter-spacing:.05em;}
+.detail-layout{max-width:1100px;margin:0 auto;padding:40px 24px;display:grid;grid-template-columns:360px 1fr;gap:48px;}
+.detail-cover-wrap{position:sticky;top:80px;height:fit-content;}
+.detail-cover{width:100%;border-radius:var(--radius2);box-shadow:0 20px 60px rgba(0,0,0,.8);}
+.detail-info h1{font-family:var(--font-head);font-size:clamp(1.4rem,3vw,2.2rem);color:var(--text);margin-bottom:8px;line-height:1.3;}
+.detail-author{font-family:var(--font-alt);font-style:italic;font-size:1.1rem;color:var(--gold3);margin-bottom:20px;}
+.detail-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;}
+.tag{padding:5px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius3);font-size:.75rem;font-family:var(--font-sub);color:var(--text3);letter-spacing:.05em;}
+.tag.gold{border-color:rgba(200,169,107,.4);color:var(--gold2);}
+.detail-lore{font-size:1rem;color:var(--text2);line-height:1.8;margin-bottom:28px;}
+.format-tabs{display:flex;gap:0;border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden;margin-bottom:28px;}
+.format-tab{flex:1;padding:12px 8px;font-family:var(--font-sub);font-size:.75rem;letter-spacing:.08em;text-align:center;color:var(--text3);transition:var(--transition);border-right:1px solid var(--border2);}
+.format-tab:last-child{border-right:none;}
+.format-tab.active{background:var(--bg3);color:var(--gold);}
+.format-tab:hover:not(.active){background:var(--bg4);}
+.price-display{font-family:var(--font-head);font-size:2rem;color:var(--gold);margin-bottom:8px;}
+.stock-info{font-size:.85rem;color:var(--text3);margin-bottom:20px;}
+.detail-actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:32px;}
+.detail-actions .btn-primary{font-size:.82rem;padding:14px 28px;}
+.detail-actions .btn-ghost{font-size:.82rem;padding:13px 20px;}
+.reviews-section{margin-top:40px;}
+.review-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius2);padding:20px;margin-bottom:16px;}
+.review-stars{color:var(--gold);margin-bottom:6px;font-size:.9rem;}
+.review-text{font-size:.95rem;color:var(--text2);line-height:1.7;font-style:italic;}
+.review-author{font-family:var(--font-sub);font-size:.78rem;color:var(--text3);margin-top:8px;}
+.cart-layout{max-width:1000px;margin:0 auto;padding:40px 24px;}
+.cart-table{width:100%;border-collapse:collapse;margin-bottom:32px;}
+.cart-table th{font-family:var(--font-sub);font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text3);padding:12px 16px;border-bottom:1px solid var(--border);text-align:left;}
+.cart-table td{padding:16px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.cart-book-thumb{width:48px;height:64px;border-radius:4px;}
+.cart-book-name{font-family:var(--font-sub);font-size:.9rem;color:var(--text);}
+.cart-book-format{font-size:.78rem;color:var(--text3);margin-top:3px;}
+.qty-ctrl{display:flex;align-items:center;gap:8px;}
+.qty-btn{width:28px;height:28px;border-radius:4px;background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-size:1rem;display:flex;align-items:center;justify-content:center;transition:var(--transition);}
+.qty-btn:hover{border-color:var(--gold3);color:var(--gold);}
+.qty-val{font-family:var(--font-sub);font-size:.9rem;min-width:24px;text-align:center;}
+.remove-btn{color:var(--danger);font-size:1.1rem;padding:4px;transition:var(--transition);}
+.remove-btn:hover{opacity:.7;}
+.cart-sidebar{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius2);padding:28px;width:360px;height:fit-content;}
+.cart-sidebar h3{font-family:var(--font-sub);font-size:.8rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold3);margin-bottom:20px;}
+.coupon-row{display:flex;gap:8px;margin-bottom:20px;}
+.coupon-row input{flex:1;padding:10px 14px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);outline:none;font-size:.88rem;}
+.coupon-row input:focus{border-color:var(--gold3);}
+.order-row{display:flex;justify-content:space-between;padding:8px 0;font-size:.9rem;color:var(--text2);border-bottom:1px solid var(--border);}
+.order-row:last-of-type{border-bottom:none;font-family:var(--font-sub);font-size:1rem;color:var(--text);padding-top:12px;}
+.order-row span:last-child{color:var(--gold);}
+.payment-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:20px 0;}
+.pay-tab{padding:8px 14px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);font-family:var(--font-sub);font-size:.72rem;letter-spacing:.08em;color:var(--text3);transition:var(--transition);}
+.pay-tab.active{border-color:var(--gold3);color:var(--gold);background:rgba(200,169,107,.08);}
+.cart-flex{display:flex;gap:32px;align-items:flex-start;flex-wrap:wrap;}
+.cart-main{flex:1;min-width:0;}
+.tracker-layout{max-width:800px;margin:0 auto;padding:40px 24px;}
+.empty-tracker{text-align:center;padding:80px 24px;color:var(--text3);}
+.empty-tracker h3{font-family:var(--font-sub);font-size:1.1rem;color:var(--text2);margin-bottom:12px;}
+.tracking-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius2);padding:28px;margin-bottom:24px;}
+.tracking-id{font-family:var(--font-sub);font-size:.8rem;color:var(--text3);margin-bottom:16px;letter-spacing:.1em;}
+.timeline{position:relative;padding-left:40px;}
+.timeline::before{content:'';position:absolute;left:14px;top:0;bottom:0;width:2px;background:var(--border);}
+.tl-item{position:relative;padding:0 0 32px 20px;}
+.tl-dot{position:absolute;left:-26px;width:12px;height:12px;border-radius:50%;background:var(--bg3);border:2px solid var(--border2);top:4px;transition:all .5s;}
+.tl-dot.done{background:var(--gold);border-color:var(--gold);box-shadow:0 0 12px rgba(200,169,107,.4);}
+.tl-dot.active{background:var(--gold3);border-color:var(--gold);animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(200,169,107,.4);}50%{box-shadow:0 0 0 8px rgba(200,169,107,0);}}
+.tl-label{font-family:var(--font-sub);font-size:.85rem;color:var(--text2);}
+.tl-time{font-size:.75rem;color:var(--text3);margin-top:3px;}
+.tl-desc{font-size:.88rem;color:var(--text3);margin-top:6px;font-style:italic;}
+.owl-map{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);padding:16px;margin-top:24px;position:relative;overflow:hidden;height:200px;}
+.owl-anim{position:absolute;font-size:2rem;animation:owlFly 3s linear infinite;}
+@keyframes owlFly{0%{left:5%;top:40%;}25%{top:20%;}50%{left:50%;top:45%;}75%{top:25%;}100%{left:90%;top:40%;}}
+.auth-layout{max-width:460px;margin:0 auto;padding:48px 24px;}
+.auth-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius2);padding:40px;}
+.auth-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:32px;}
+.auth-tab{flex:1;padding:12px;font-family:var(--font-sub);font-size:.8rem;letter-spacing:.1em;text-align:center;color:var(--text3);transition:var(--transition);}
+.auth-tab.active{color:var(--gold);border-bottom:2px solid var(--gold);}
+.form-group{margin-bottom:20px;}
+.form-label{display:block;font-family:var(--font-sub);font-size:.75rem;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;margin-bottom:8px;}
+.form-input{width:100%;padding:12px 16px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);outline:none;font-size:.95rem;transition:var(--transition);}
+.form-input:focus{border-color:var(--gold3);box-shadow:0 0 0 3px rgba(200,169,107,.1);}
+.profile-block{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius2);padding:28px;margin-bottom:24px;display:flex;align-items:center;gap:20px;}
+.profile-avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--gold3),var(--gold));display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-size:1.4rem;color:#1a1200;}
+.profile-name{font-family:var(--font-sub);font-size:1rem;color:var(--text);margin-bottom:4px;}
+.profile-since{font-size:.8rem;color:var(--text3);}
+.txn-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;}
+.txn-info h4{font-family:var(--font-sub);font-size:.85rem;color:var(--text);}
+.txn-info p{font-size:.78rem;color:var(--text3);margin-top:3px;}
+.txn-amount{font-family:var(--font-sub);color:var(--gold);}
+/* ── ADDRESS FEATURE CSS (NEW) ── */
+.addr-section-title{font-family:var(--font-sub);font-size:.78rem;letter-spacing:.12em;color:var(--gold3);text-transform:uppercase;margin-bottom:16px;}
+.addr-card{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:16px;margin-bottom:10px;position:relative;}
+.addr-card.addr-default{border-color:var(--gold3);box-shadow:0 0 0 1px rgba(200,169,107,.2);}
+.addr-default-badge{display:inline-block;font-family:var(--font-sub);font-size:.6rem;letter-spacing:.1em;padding:2px 8px;background:rgba(200,169,107,.15);color:var(--gold);border:1px solid rgba(200,169,107,.3);border-radius:3px;text-transform:uppercase;margin-left:8px;vertical-align:middle;}
+.addr-label{font-family:var(--font-sub);font-size:.82rem;color:var(--text);margin-bottom:6px;}
+.addr-detail{font-size:.85rem;color:var(--text3);line-height:1.65;font-family:var(--font-alt);font-style:italic;}
+.addr-actions{display:flex;gap:12px;margin-top:10px;align-items:center;}
+.addr-set-default-btn{font-family:var(--font-sub);font-size:.68rem;letter-spacing:.06em;color:var(--gold3);background:none;border:none;border-bottom:1px solid var(--gold3);padding-bottom:1px;cursor:pointer;transition:color .2s;}
+.addr-set-default-btn:hover{color:var(--gold);}
+.addr-remove-btn{font-family:var(--font-sub);font-size:.68rem;color:var(--danger);background:none;border:1px solid rgba(184,84,84,.35);border-radius:4px;padding:3px 10px;cursor:pointer;transition:var(--transition);opacity:.8;}
+.addr-remove-btn:hover{opacity:1;background:rgba(184,84,84,.08);}
+.addr-add-btn{font-family:var(--font-sub);font-size:.76rem;letter-spacing:.08em;color:var(--gold);background:var(--bg4);border:1px solid var(--border2);padding:9px 18px;border-radius:var(--radius);cursor:pointer;transition:var(--transition);margin-top:4px;}
+.addr-add-btn:hover{border-color:var(--gold3);color:var(--gold2);}
+.addr-form-box{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:20px;margin-top:14px;}
+.addr-form-heading{font-family:var(--font-sub);font-size:.72rem;letter-spacing:.14em;color:var(--gold3);text-transform:uppercase;margin-bottom:16px;}
+.addr-form-row{margin-bottom:14px;}
+.addr-form-label{display:block;font-family:var(--font-sub);font-size:.68rem;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;margin-bottom:6px;}
+.addr-checkbox-row{display:flex;align-items:center;gap:10px;margin-bottom:16px;cursor:pointer;}
+.addr-checkbox-row input[type=checkbox]{accent-color:var(--gold);width:14px;height:14px;cursor:pointer;}
+.addr-checkbox-label{font-family:var(--font-sub);font-size:.72rem;letter-spacing:.05em;color:var(--text3);}
+.addr-form-btns{display:flex;gap:10px;}
+/* delivery address on tracker */
+.delivery-addr-box{background:rgba(200,169,107,.06);border:1px solid rgba(200,169,107,.2);border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;display:flex;align-items:flex-start;gap:12px;}
+.delivery-addr-icon{font-size:1.1rem;flex-shrink:0;margin-top:2px;}
+.delivery-addr-label{font-family:var(--font-sub);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold3);margin-bottom:4px;}
+.delivery-addr-text{font-size:.88rem;color:var(--text2);line-height:1.6;font-family:var(--font-alt);font-style:italic;}
+/* ── END ADDRESS CSS ── */
+.streak-layout{max-width:800px;margin:0 auto;padding:40px 24px;}
+.streak-hero{text-align:center;padding:32px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius2);margin-bottom:28px;}
+.streak-count{font-family:var(--font-head);font-size:4rem;color:var(--gold);}
+.streak-label{font-family:var(--font-sub);font-size:.78rem;letter-spacing:.15em;color:var(--text3);text-transform:uppercase;margin-top:4px;}
+.xp-bar{height:8px;background:var(--bg4);border-radius:4px;margin:16px 0;overflow:hidden;}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--gold3),var(--gold));border-radius:4px;transition:width .6s cubic-bezier(.4,0,.2,1);}
+.rank-badge{display:inline-block;padding:10px 24px;border:1.5px solid var(--gold);border-radius:var(--radius3);font-family:var(--font-sub);font-size:.88rem;letter-spacing:.1em;color:var(--gold);margin-top:12px;}
+.achievement-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;margin-top:24px;}
+.achievement{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius2);padding:20px;text-align:center;transition:var(--transition);}
+.achievement.unlocked{border-color:var(--gold3);}
+.achievement-icon{font-size:2rem;margin-bottom:8px;}
+.achievement-name{font-family:var(--font-sub);font-size:.78rem;color:var(--text2);letter-spacing:.05em;}
+.achievement-desc{font-size:.72rem;color:var(--text3);margin-top:4px;}
+.notebook-layout{max-width:1000px;margin:0 auto;padding:40px 24px;display:grid;grid-template-columns:1fr 300px;gap:28px;}
+.note-editor{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius2);padding:28px;}
+.note-editor textarea{width:100%;min-height:200px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:16px;color:var(--text);font-size:.95rem;resize:vertical;outline:none;line-height:1.7;}
+.note-editor textarea:focus{border-color:var(--gold3);}
+.note-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius2);padding:20px;margin-bottom:14px;cursor:pointer;transition:var(--transition);}
+.note-card:hover{border-color:var(--gold3);}
+.note-card h4{font-family:var(--font-sub);font-size:.85rem;color:var(--text);margin-bottom:6px;}
+.note-card p{font-size:.82rem;color:var(--text3);line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.note-card time{font-size:.72rem;color:var(--text4);display:block;margin-top:8px;}
+.reading-tracker{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius2);padding:24px;}
+.reading-tracker h3{font-family:var(--font-sub);font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold3);margin-bottom:20px;}
+.hours-display{font-family:var(--font-head);font-size:3rem;color:var(--gold);text-align:center;margin:16px 0;}
+.currency-layout{max-width:600px;margin:0 auto;padding:60px 24px;text-align:center;}
+.currency-hero{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius2);padding:48px;margin-bottom:32px;}
+.currency-display{font-family:var(--font-head);font-size:3rem;color:var(--gold);margin:24px 0;}
+.currency-toggle-btn{font-family:var(--font-sub);font-size:.9rem;letter-spacing:.12em;padding:16px 40px;border-radius:var(--radius3);background:linear-gradient(135deg,var(--gold3),var(--gold));color:#1a1200;font-weight:700;transition:var(--transition);}
+.currency-toggle-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(200,169,107,.4);}
+.rate-info{font-size:.9rem;color:var(--text3);margin-top:16px;}
+canvas{display:block;border-radius:var(--radius2);}
+.game-wrap{max-width:700px;margin:0 auto;padding:20px 24px;}
+.game-hud{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;}
+.hud-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 20px;text-align:center;flex:1;}
+.hud-label{font-family:var(--font-sub);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);}
+.hud-val{font-family:var(--font-head);font-size:1.3rem;color:var(--gold);margin-top:4px;}
+#gem-canvas{background:#100e0b;border:1.5px solid var(--border2);cursor:pointer;width:100%;max-width:540px;height:540px;}
+#snake-canvas{background:#100e0b;border:1.5px solid var(--border2);width:100%;max-width:520px;height:520px;}
+.snake-controls{display:grid;grid-template-columns:repeat(3,52px);gap:6px;margin:16px auto;width:fit-content;}
+.snake-btn{width:52px;height:52px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--gold);font-size:1.2rem;display:flex;align-items:center;justify-content:center;transition:var(--transition);font-weight:bold;}
+.snake-btn:hover{background:var(--bg4);border-color:var(--gold3);}
+.game-over-overlay{position:absolute;inset:0;background:rgba(0,0,0,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;border-radius:var(--radius2);}
+.game-container{position:relative;}
+.community-layout{display:grid;grid-template-columns:280px 1fr;min-height:calc(100vh - 64px);}
+.community-sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:28px 20px;position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto;}
+.community-sidebar h3{font-family:var(--font-sub);font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold3);margin-bottom:16px;}
+.comm-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--radius);cursor:pointer;transition:var(--transition);margin-bottom:4px;}
+.comm-item:hover{background:var(--bg3);}
+.comm-item.active{background:rgba(200,169,107,.1);border:1px solid rgba(200,169,107,.2);}
+.comm-icon{width:38px;height:38px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.comm-name{font-family:var(--font-sub);font-size:.8rem;color:var(--text2);}
+.comm-members{font-size:.7rem;color:var(--text3);}
+.community-main{padding:28px 24px;max-width:800px;}
+.post-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius2);padding:24px;margin-bottom:16px;}
+.post-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.post-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--gold3),var(--bg3));display:flex;align-items:center;justify-content:center;font-family:var(--font-sub);font-size:.85rem;color:var(--gold);}
+.post-author{font-family:var(--font-sub);font-size:.85rem;color:var(--text);}
+.post-time{font-size:.72rem;color:var(--text3);}
+.post-title{font-family:var(--font-sub);font-size:1rem;color:var(--text);margin-bottom:10px;}
+.post-body{font-size:.92rem;color:var(--text2);line-height:1.7;margin-bottom:16px;}
+.post-actions{display:flex;gap:16px;align-items:center;}
+.post-action-btn{display:flex;align-items:center;gap:6px;font-family:var(--font-sub);font-size:.75rem;color:var(--text3);padding:6px 12px;border-radius:var(--radius);background:var(--bg3);transition:var(--transition);}
+.post-action-btn:hover{color:var(--gold);background:var(--bg4);}
+.comment-box{margin-top:16px;padding-top:16px;border-top:1px solid var(--border);}
+.comment-input{width:100%;padding:10px 14px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);outline:none;font-size:.88rem;}
+.comment-input:focus{border-color:var(--gold3);}
+.comment-item{padding:10px 0;border-bottom:1px dashed var(--border);}
+.comment-item:last-child{border-bottom:none;}
+.comment-item strong{font-family:var(--font-sub);font-size:.78rem;color:var(--gold3);}
+.comment-item p{font-size:.85rem;color:var(--text2);margin-top:3px;}
+.create-comm-form{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius2);padding:24px;margin-top:24px;}
+#ai-bubble{position:fixed;bottom:24px;right:24px;z-index:6000;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--gold3),var(--gold));display:flex;align-items:center;justify-content:center;font-size:1.4rem;cursor:pointer;box-shadow:0 4px 20px rgba(200,169,107,.5);transition:var(--transition);animation:float 3s ease-in-out infinite;}
+#ai-bubble:hover{transform:scale(1.1);}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+#ai-panel{position:fixed;bottom:90px;right:24px;z-index:6000;width:340px;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius2);box-shadow:var(--shadow2);display:none;flex-direction:column;max-height:480px;}
+#ai-panel.open{display:flex;}
+.ai-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;}
+.ai-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold3),var(--gold));display:flex;align-items:center;justify-content:center;font-size:1rem;}
+.ai-name{font-family:var(--font-sub);font-size:.85rem;color:var(--text);}
+.ai-status{font-size:.72rem;color:var(--success);}
+#ai-messages{flex:1;overflow-y:auto;padding:16px;}
+.ai-msg{margin-bottom:12px;display:flex;flex-direction:column;}
+.ai-msg.user{align-items:flex-end;}
+.ai-msg-bubble{padding:10px 14px;border-radius:var(--radius);font-size:.85rem;line-height:1.6;max-width:80%;}
+.ai-msg.bot .ai-msg-bubble{background:var(--bg3);color:var(--text2);}
+.ai-msg.user .ai-msg-bubble{background:linear-gradient(135deg,var(--gold3),var(--gold));color:#1a1200;font-family:var(--font-sub);}
+.ai-input-row{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;}
+.ai-input-row input{flex:1;padding:10px 14px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);outline:none;font-size:.85rem;}
+.ai-input-row input:focus{border-color:var(--gold3);}
+.ai-send-btn{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--gold3),var(--gold));color:#1a1200;font-size:1rem;display:flex;align-items:center;justify-content:center;}
+.flex{display:flex;}.gap-8{gap:8px;}.gap-12{gap:12px;}.gap-16{gap:16px;}
+.mt-16{margin-top:16px;}.mt-24{margin-top:24px;}.mt-32{margin-top:32px;}
+.mb-16{margin-bottom:16px;}.mb-24{margin-bottom:24px;}
+.text-gold{color:var(--gold);}.text-muted{color:var(--text3);}.text-center{text-align:center;}.w-full{width:100%;}
+.section-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius2);padding:28px;margin-bottom:20px;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+@media(max-width:900px){
+  .catalog-layout{grid-template-columns:1fr;}
+  .filter-sidebar{position:relative;height:auto;top:0;}
+  .detail-layout{grid-template-columns:1fr;}
+  .detail-cover-wrap{position:relative;top:0;max-width:260px;margin:0 auto;}
+  .notebook-layout{grid-template-columns:1fr;}
+  .community-layout{grid-template-columns:1fr;}
+  .community-sidebar{position:relative;height:auto;top:0;}
+  .cart-flex{flex-direction:column;}
+  .cart-sidebar{width:100%;}
+}
+@media(max-width:600px){
+  .catalog-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));}
+  .achievement-grid{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+<!-- AUDIO MODAL -->
+<div id="audio-modal">
+  <div class="modal-glow"></div>
+  <svg class="sigil" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="60" cy="60" r="55" stroke="#c8a96b" stroke-width="1" opacity=".4"/>
+    <circle cx="60" cy="60" r="40" stroke="#c8a96b" stroke-width="1" opacity=".3"/>
+    <polygon points="60,10 112,80 8,80" fill="none" stroke="#c8a96b" stroke-width="1" opacity=".5"/>
+    <polygon points="60,110 8,40 112,40" fill="none" stroke="#c8a96b" stroke-width="1" opacity=".5"/>
+    <circle cx="60" cy="60" r="6" fill="#c8a96b" opacity=".7"/>
+  </svg>
+  <h1>MAESTERIFY</h1>
+  <p>A Premium Digital Book Sanctuary awaits beyond the veil of silence</p>
+  <button class="cta-btn" onclick="window.initSanctuary()">✦ Unlock Sanctuary Audio Engine ✦</button>
+</div>
+<!-- NAV -->
+<nav id="nav" style="display:none">
+  <div class="nav-inner">
+    <div class="nav-logo">✦ MAESTERIFY</div>
+    <button class="nav-tab active" onclick="window.switchTab('landing')">Sanctuary</button>
+    <button class="nav-tab" onclick="window.switchTab('shelves')">Whispering Shelves</button>
+    <button class="nav-tab" onclick="window.switchTab('detail')">Tome Chronicles</button>
+    <button class="nav-tab" onclick="window.switchTab('cart')">Cart Ledger</button>
+    <button class="nav-tab" onclick="window.switchTab('tracker')">Owl Post</button>
+    <button class="nav-tab" onclick="window.switchTab('auth')">Scribe Access</button>
+    <button class="nav-tab" onclick="window.switchTab('streak')">Scholar's Vow</button>
+    <button class="nav-tab" onclick="window.switchTab('notebook')">Notebook Hub</button>
+    <button class="nav-tab" onclick="window.switchTab('currency')">Currency Vault</button>
+    <button class="nav-tab" onclick="window.switchTab('gem')">Gem Sanctuary</button>
+    <button class="nav-tab" onclick="window.switchTab('snake')">Ink Serpent</button>
+    <button class="nav-tab" onclick="window.switchTab('community')">Community Hub</button>
+    <div class="nav-right">
+      <div style="position:relative">
+        <button class="nav-icon-btn" onclick="window.switchTab('cart')" title="Cart">🛒
+          <span class="cart-badge" id="cart-count">0</span>
+        </button>
+      </div>
+      <button class="nav-icon-btn" onclick="window.switchTab('auth')" title="Account">👤</button>
+    </div>
+  </div>
+</nav>
+<div id="toast-container"></div>
+<!-- SCREEN 1 LANDING -->
+<div id="screen-landing" class="screen active">
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <canvas id="particle-canvas" class="hero-particles" width="1400" height="520"></canvas>
+    <div class="hero-content">
+      <div class="hero-eyebrow">✦ Est. In The Age of Manuscripts ✦</div>
+      <h1 class="hero-title">Where <span>Ancient Wisdom</span><br>Meets Digital Sanctum</h1>
+      <p class="hero-sub">Curated relics for the discerning scholar of the eternal arts</p>
+      <div style="max-width:600px;margin:0 auto 32px;position:relative">
+        <input type="text" id="hero-search" class="search-input" placeholder="Search for ancient tomes, authors, or rare editions..." oninput="window.heroSearch(this.value)">
+        <span class="search-icon">🔍</span>
+        <div class="search-results" id="hero-search-results"></div>
+      </div>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="window.switchTab('shelves')">✦ Enter The Shelves</button>
+        <button class="btn-ghost" onclick="window.switchTab('community')">Join Scholars</button>
+      </div>
+    </div>
+  </div>
+  <div class="carousel-section">
+    <div class="section-title">✦ Curator's Selection</div>
+    <div class="section-heading">Featured Rare Manuscripts</div>
+    <div style="position:relative">
+      <button class="carousel-btn prev" onclick="window.moveCarousel(-1)">‹</button>
+      <div class="carousel" style="overflow:hidden;padding:0 8px">
+        <div class="carousel-track" id="carousel-track"></div>
+      </div>
+      <button class="carousel-btn next" onclick="window.moveCarousel(1)">›</button>
+    </div>
+  </div>
+  <div class="carousel-section">
+    <div class="section-title">✦ Emotional Prescriptions</div>
+    <div class="section-heading">Curated By Feeling</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px">
+      <div class="section-box" style="cursor:pointer;text-align:center" onclick="window.filterByEmotion('Melancholic')"><div style="font-size:2rem;margin-bottom:8px">🌒</div><div style="font-family:var(--font-sub);font-size:.85rem;color:var(--text)">Melancholic</div><div style="font-size:.78rem;color:var(--text3);margin-top:4px">For quiet evenings</div></div>
+      <div class="section-box" style="cursor:pointer;text-align:center" onclick="window.filterByEmotion('Transcendent')"><div style="font-size:2rem;margin-bottom:8px">✨</div><div style="font-family:var(--font-sub);font-size:.85rem;color:var(--text)">Transcendent</div><div style="font-size:.78rem;color:var(--text3);margin-top:4px">Beyond the mundane</div></div>
+      <div class="section-box" style="cursor:pointer;text-align:center" onclick="window.filterByEmotion('Cathartic')"><div style="font-size:2rem;margin-bottom:8px">💧</div><div style="font-family:var(--font-sub);font-size:.85rem;color:var(--text)">Cathartic</div><div style="font-size:.78rem;color:var(--text3);margin-top:4px">Healing through story</div></div>
+      <div class="section-box" style="cursor:pointer;text-align:center" onclick="window.filterByEmotion('Thrilling')"><div style="font-size:2rem;margin-bottom:8px">⚡</div><div style="font-family:var(--font-sub);font-size:.85rem;color:var(--text)">Thrilling</div><div style="font-size:.78rem;color:var(--text3);margin-top:4px">Edge of your seat</div></div>
+      <div class="section-box" style="cursor:pointer;text-align:center" onclick="window.filterByEmotion('Philosophical')"><div style="font-size:2rem;margin-bottom:8px">🦉</div><div style="font-family:var(--font-sub);font-size:.85rem;color:var(--text)">Philosophical</div><div style="font-size:.78rem;color:var(--text3);margin-top:4px">Deeper questions</div></div>
+    </div>
+  </div>
+</div>
+<!-- SCREEN 2 SHELVES -->
+<div id="screen-shelves" class="screen">
+  <div class="screen-header"><h2>The Whispering Shelves</h2><p>One hundred and five sacred volumes await your discerning eye,<br>each inscribed with the wisdom of ages past</p><div class="screen-divider"></div></div>
+  <div class="catalog-layout">
+    <div class="filter-sidebar">
+      <h3>✦ Refine Your Search</h3>
+      <div class="filter-group"><span class="filter-label">Genre</span><div id="genre-filters"></div></div>
+      <div class="filter-group"><span class="filter-label">Emotional Prescription</span><div id="emotion-filters"></div></div>
+      <div class="filter-group">
+        <span class="filter-label">Material Traits</span>
+        <label class="filter-option"><input type="checkbox" onchange="window.applyFilters()" data-trait="Spredes"> Spredes</label>
+        <label class="filter-option"><input type="checkbox" onchange="window.applyFilters()" data-trait="Gilded Accents"> Gilded Accents</label>
+        <label class="filter-option"><input type="checkbox" onchange="window.applyFilters()" data-trait="Debossed Hardcover"> Debossed Hardcover</label>
+        <label class="filter-option"><input type="checkbox" onchange="window.applyFilters()" data-trait="Ribbon Bookmark"> Ribbon Bookmark</label>
+        <label class="filter-option"><input type="checkbox" onchange="window.applyFilters()" data-trait="Sewn Binding"> Sewn Binding</label>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Rarity</span>
+        <label class="filter-option"><input type="checkbox" onchange="window.applyFilters()" data-rarity="Legendary"> Legendary</label>
+        <label class="filter-option"><input type="checkbox" onchange="window.applyFilters()" data-rarity="Rare"> Rare</label>
+        <label class="filter-option"><input type="checkbox" onchange="window.applyFilters()" data-rarity="Uncommon"> Uncommon</label>
+        <label class="filter-option"><input type="checkbox" onchange="window.applyFilters()" data-rarity="Common"> Common</label>
+      </div>
+      <button class="btn-ghost w-full" style="font-size:.78rem;padding:10px" onclick="window.clearFilters()">✕ Clear Filters</button>
+    </div>
+    <div class="catalog-main">
+      <div class="catalog-search-bar"><input type="text" id="catalog-search" placeholder="Search titles, authors, genres..." oninput="window.applyFilters()"></div>
+      <div class="catalog-count" id="catalog-count">Showing 105 volumes</div>
+      <div class="catalog-grid" id="catalog-grid"></div>
+    </div>
+  </div>
+</div>
+<!-- SCREEN 3 DETAIL -->
+<div id="screen-detail" class="screen"><div id="detail-content"><div class="screen-header"><h2>Select a tome from The Whispering Shelves</h2><p>Click any book to view its chronicle</p></div></div></div>
+<!-- SCREEN 4 CART -->
+<div id="screen-cart" class="screen">
+  <div class="screen-header"><h2>The Alchemist's Cart Ledger</h2><p>Review your curated acquisitions before they are dispatched<br>into the network of ancient postal routes</p><div class="screen-divider"></div></div>
+  <div class="cart-layout">
+    <div class="cart-flex">
+      <div class="cart-main">
+        <div id="cart-empty" style="text-align:center;padding:60px 24px;color:var(--text3)">
+          <div style="font-size:3rem;margin-bottom:16px">📚</div>
+          <h3 style="font-family:var(--font-sub);color:var(--text2)">Your ledger is empty</h3>
+          <p style="margin-top:8px;margin-bottom:20px">Visit the shelves to begin your collection</p>
+          <button class="btn-primary" onclick="window.switchTab('shelves')">Browse The Shelves</button>
+        </div>
+        <table class="cart-table" id="cart-table" style="display:none">
+          <thead><tr><th>Volume</th><th>Format</th><th>Price</th><th>Qty</th><th>Total</th><th></th></tr></thead>
+          <tbody id="cart-body"></tbody>
+        </table>
+      </div>
+      <div class="cart-sidebar" id="cart-sidebar" style="display:none">
+        <h3>Order Summary</h3>
+        <div class="coupon-row">
+          <input type="text" id="coupon-input" placeholder="Coupon code...">
+          <button class="btn-primary" style="font-size:.78rem;padding:10px 16px" onclick="window.applyCoupon()">Apply</button>
+        </div>
+        <div id="order-summary"></div>
+        <div style="margin-top:16px">
+          <div style="font-family:var(--font-sub);font-size:.72rem;letter-spacing:.12em;color:var(--gold3);text-transform:uppercase;margin-bottom:12px">Payment Method</div>
+          <div class="payment-tabs" id="payment-tabs">
+            <button class="pay-tab active" onclick="window.setPayTab(this,'card')">💳 Card</button>
+            <button class="pay-tab" onclick="window.setPayTab(this,'netbank')">🏦 Net Banking</button>
+            <button class="pay-tab" onclick="window.setPayTab(this,'razorpay')">⚡ Razorpay</button>
+            <button class="pay-tab" onclick="window.setPayTab(this,'gpay')">G Pay</button>
+            <button class="pay-tab" onclick="window.setPayTab(this,'phonepe')">☎ PhonePe</button>
+          </div>
+        </div>
+        <button class="btn-primary w-full mt-16" style="text-align:center;padding:16px" onclick="window.checkout()">✦ Seal & Dispatch Order</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- SCREEN 5 TRACKER -->
+<div id="screen-tracker" class="screen">
+  <div class="screen-header"><h2>Owl Post Tracker</h2><p>Follow the sacred journey of your manuscripts<br>from our vaults to your waiting hands</p><div class="screen-divider"></div></div>
+  <div class="tracker-layout" id="tracker-content">
+    <div class="empty-tracker"><div style="font-size:3rem;margin-bottom:16px">🦉</div><h3>No dispatches yet</h3><p>Complete a purchase to see your owl's flight path</p><button class="btn-ghost mt-16" onclick="window.switchTab('cart')">Visit Cart</button></div>
+  </div>
+</div>
+<!-- SCREEN 6 AUTH -->
+<div id="screen-auth" class="screen">
+  <div class="screen-header"><h2>Scribe Access &amp; Control</h2><p>Enter the sanctum with your credentials,<br>or inscribe your name in the great ledger</p><div class="screen-divider"></div></div>
+  <div id="auth-main"></div>
+</div>
+<!-- SCREEN 7 STREAK -->
+<div id="screen-streak" class="screen">
+  <div class="screen-header"><h2>The Scholar's Vow Terminal</h2><p>Forge an unbreakable covenant with the written word,<br>each day a testament to your devotion</p><div class="screen-divider"></div></div>
+  <div class="streak-layout">
+    <div class="streak-hero">
+      <div style="font-size:.78rem;font-family:var(--font-sub);letter-spacing:.15em;color:var(--text3);text-transform:uppercase;margin-bottom:8px">Current Streak</div>
+      <div class="streak-count" id="streak-count">0</div>
+      <div class="streak-label">🔥 Days of Devoted Study</div>
+      <div style="margin-top:20px">
+        <div style="display:flex;justify-content:space-between;font-family:var(--font-sub);font-size:.78rem;color:var(--text3);margin-bottom:6px"><span>XP: <span id="xp-val">0</span></span><span>Next Level: <span id="xp-next">500</span></span></div>
+        <div class="xp-bar"><div class="xp-fill" id="xp-fill" style="width:0%"></div></div>
+        <div class="rank-badge" id="rank-badge">Novice Initiate</div>
+      </div>
+      <button class="btn-primary mt-24" onclick="window.incrementStreak()">📖 Log Today's Reading</button>
+    </div>
+    <div class="achievement-grid" id="achievement-grid"></div>
+  </div>
+</div>
+<!-- SCREEN 8 NOTEBOOK -->
+<div id="screen-notebook" class="screen">
+  <div class="screen-header"><h2>The Reader's Notebook Hub</h2><p>Inscribe your reflections, annotations, and reveries<br>in the margins of your digital grimoire</p><div class="screen-divider"></div></div>
+  <div class="notebook-layout">
+    <div>
+      <div class="note-editor section-box">
+        <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+          <input type="text" id="note-title" class="form-input" placeholder="Note title..." style="flex:1">
+          <select id="note-book-link" class="form-input" style="width:180px"><option value="">Link to a book...</option></select>
+        </div>
+        <textarea id="note-body" placeholder="Write your annotations, reflections, and scholarly observations here...&#10;&#10;The ink dries, but the thoughts remain eternal..."></textarea>
+        <div style="display:flex;justify-content:flex-end;margin-top:12px"><button class="btn-primary" style="font-size:.82rem;padding:10px 24px" onclick="window.saveNote()">✦ Inscribe Note</button></div>
+      </div>
+      <div id="notes-list"></div>
+    </div>
+    <div>
+      <div class="reading-tracker">
+        <h3>Reading Hours</h3>
+        <div class="hours-display" id="reading-hours">0.0</div>
+        <div style="text-align:center;font-size:.78rem;color:var(--text3);margin-bottom:16px">Total hours tracked</div>
+        <div style="display:flex;gap:8px"><input type="number" id="hours-input" class="form-input" placeholder="Add hours..." min="0" max="24" step=".5" style="flex:1"><button class="btn-primary" style="padding:10px 16px;font-size:.78rem" onclick="window.addReadingHours()">+</button></div>
+      </div>
+      <div class="section-box mt-16">
+        <div style="font-family:var(--font-sub);font-size:.78rem;letter-spacing:.12em;color:var(--gold3);text-transform:uppercase;margin-bottom:16px">Reading Statistics</div>
+        <div class="order-row"><span>Notes Written</span><span id="stat-notes">0</span></div>
+        <div class="order-row"><span>Hours Read</span><span id="stat-hours">0.0</span></div>
+        <div class="order-row"><span>Books Linked</span><span id="stat-books">0</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- SCREEN 9 CURRENCY -->
+<div id="screen-currency" class="screen">
+  <div class="screen-header"><h2>The Apothecary Currency Vault</h2><p>Command the exchange of ancient currency,<br>where gold speaks every tongue</p><div class="screen-divider"></div></div>
+  <div class="currency-layout">
+    <div class="currency-hero">
+      <div style="font-size:.78rem;font-family:var(--font-sub);letter-spacing:.15em;color:var(--text3);text-transform:uppercase">Active Currency</div>
+      <div class="currency-display" id="currency-display">$ USD</div>
+      <div class="rate-info">Exchange Rate: 1 USD = 83 INR</div>
+      <div style="margin:28px 0"><button class="currency-toggle-btn" id="currency-btn" onclick="window.toggleCurrency()">Switch to INR ₹</button></div>
+      <div style="background:var(--bg3);border-radius:var(--radius);padding:16px;font-size:.9rem;color:var(--text2);line-height:1.7">All prices across the Sanctuary update instantly upon switching.<br>Cart, catalog, detail pages — every gold coin recalibrated.</div>
+    </div>
+    <div class="section-box"><div style="font-family:var(--font-sub);font-size:.78rem;letter-spacing:.12em;color:var(--gold3);text-transform:uppercase;margin-bottom:16px">Sample Price Preview</div><div id="currency-preview"></div></div>
+  </div>
+</div>
+<!-- SCREEN 10 GEM -->
+<div id="screen-gem" class="screen">
+  <div class="screen-header"><h2>Match-3 Gem Sanctuary</h2><p>Align the sacred gems to earn ancient wisdom<br>and unlock the treasures of the vault</p><div class="screen-divider"></div></div>
+  <div class="game-wrap">
+    <div class="game-hud">
+      <div class="hud-box"><div class="hud-label">Score</div><div class="hud-val" id="gem-score">0</div></div>
+      <div class="hud-box"><div class="hud-label">Level</div><div class="hud-val" id="gem-level">1</div></div>
+      <div class="hud-box"><div class="hud-label">Target</div><div class="hud-val" id="gem-target">500</div></div>
+      <div class="hud-box"><div class="hud-label">Moves</div><div class="hud-val" id="gem-moves">30</div></div>
+    </div>
+    <div class="game-container">
+      <canvas id="gem-canvas" width="540" height="540"></canvas>
+      <div class="game-over-overlay" id="gem-overlay" style="display:none">
+        <div style="font-family:var(--font-head);font-size:1.8rem;color:var(--gold)" id="gem-overlay-title">Game Over</div>
+        <div style="color:var(--text2);font-size:.95rem" id="gem-overlay-msg">The gems have refused your command</div>
+        <button class="btn-primary" onclick="window.restartGem()">✦ Try Again</button>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:12px"><button class="btn-ghost" style="font-size:.8rem;padding:10px 24px" onclick="window.restartGem()">↺ New Game</button></div>
+  </div>
+</div>
+<!-- SCREEN 11 SNAKE -->
+<div id="screen-snake" class="screen">
+  <div class="screen-header"><h2>Ink Scribe's Serpent</h2><p>Guide the ancient serpent through the parchment labyrinth,<br>devouring the runes of power</p><div class="screen-divider"></div></div>
+  <div class="game-wrap">
+    <div class="game-hud">
+      <div class="hud-box"><div class="hud-label">Score</div><div class="hud-val" id="snake-score">0</div></div>
+      <div class="hud-box"><div class="hud-label">High Score</div><div class="hud-val" id="snake-hi">0</div></div>
+      <div class="hud-box"><div class="hud-label">Length</div><div class="hud-val" id="snake-len">1</div></div>
+    </div>
+    <div class="game-container" style="display:flex;flex-direction:column;align-items:center">
+      <canvas id="snake-canvas" width="520" height="520"></canvas>
+      <div class="snake-controls">
+        <div></div><button class="snake-btn" onclick="window.setSnakeDir('UP')">▲</button><div></div>
+        <button class="snake-btn" onclick="window.setSnakeDir('LEFT')">◀</button>
+        <button class="snake-btn" onclick="window.setSnakeDir('DOWN')">▼</button>
+        <button class="snake-btn" onclick="window.setSnakeDir('RIGHT')">▶</button>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:12px"><button class="btn-ghost" style="font-size:.8rem;padding:10px 24px" onclick="window.restartSnake()">↺ New Game</button></div>
+  </div>
+</div>
+<!-- SCREEN 12 COMMUNITY -->
+<div id="screen-community" class="screen">
+  <div class="screen-header"><h2>The Community Hub</h2><p>Gather with fellow scholars, debate ancient texts,<br>and forge bonds across the tapestry of literature</p><div class="screen-divider"></div></div>
+  <div class="community-layout">
+    <div class="community-sidebar">
+      <h3>✦ Communities</h3>
+      <div id="comm-list"></div>
+      <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border)"><button class="btn-ghost w-full" style="font-size:.78rem;padding:10px" onclick="window.showCreateComm()">+ Create Community</button></div>
+    </div>
+    <div class="community-main">
+      <div id="comm-feed"></div>
+      <div id="create-comm-panel" style="display:none">
+        <div class="create-comm-form">
+          <div style="font-family:var(--font-sub);font-size:.85rem;color:var(--gold3);margin-bottom:20px;letter-spacing:.1em">CREATE A NEW COMMUNITY</div>
+          <div class="form-group"><label class="form-label">Community Name</label><input type="text" id="new-comm-name" class="form-input" placeholder="e.g. Arcane Bibliophiles"></div>
+          <div class="form-group"><label class="form-label">Description</label><textarea id="new-comm-desc" class="form-input" rows="3" placeholder="What defines this gathering of minds?"></textarea></div>
+          <div class="form-group"><label class="form-label">Tag</label><input type="text" id="new-comm-tag" class="form-input" placeholder="e.g. #Arcane"></div>
+          <div style="display:flex;gap:12px">
+            <button class="btn-primary" style="font-size:.82rem;padding:12px 24px" onclick="window.createCommunity()">✦ Establish Community</button>
+            <button class="btn-ghost" style="font-size:.82rem;padding:11px 20px" onclick="document.getElementById('create-comm-panel').style.display='none'">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- AI COMPANION -->
+<div id="ai-bubble" onclick="window.toggleAI()" title="Arcane Guide AI">🦉</div>
+<div id="ai-panel">
+  <div class="ai-header"><div class="ai-avatar">🦉</div><div><div class="ai-name">Arcane Guide</div><div class="ai-status">● Online</div></div></div>
+  <div id="ai-messages"><div class="ai-msg bot"><div class="ai-msg-bubble">Greetings, Scholar. I am the Arcane Guide. Ask me to find books, navigate the sanctuary, or uncover hidden knowledge.</div></div></div>
+  <div class="ai-input-row">
+    <input type="text" id="ai-input" placeholder="Ask the oracle..." onkeydown="if(event.key==='Enter')window.sendAI()">
+    <button class="ai-send-btn" onclick="window.sendAI()">➤</button>
+  </div>
+</div>
+<script>
+window.MaesterifyEngine=(function(){
+// ── AUDIO ENGINE ──────────────────────────────────────────
+let audioCtx=null;
+function initAudio(){audioCtx=new(window.AudioContext||window.webkitAudioContext)();}
+function playNote(freq,type='sine',dur=0.3,vol=0.15){
+  if(!audioCtx)return;
+  try{const osc=audioCtx.createOscillator();const gain=audioCtx.createGain();osc.connect(gain);gain.connect(audioCtx.destination);osc.type=type;osc.frequency.value=freq;gain.gain.setValueAtTime(vol,audioCtx.currentTime);gain.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+dur);osc.start();osc.stop(audioCtx.currentTime+dur);}catch(e){}
+}
+function playChime(){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>playNote(f,'sine',.4,.12),i*80));}
+function playBell(){playNote(880,'sine',.6,.1);setTimeout(()=>playNote(1174,'sine',.4,.08),100);}
+function playCart(){[440,554,659].forEach((f,i)=>setTimeout(()=>playNote(f,'triangle',.25,.1),i*60));}
+function playNavSwitch(){playNote(660,'sine',.15,.08);}
+function playMatch(){[523,659,784,1047,1319].forEach((f,i)=>setTimeout(()=>playNote(f,'square',.2,.12),i*50));}
+function playEat(){playNote(440,'sawtooth',.1,.1);}
+function playVictory(){[523,587,659,698,784,880,988,1047].forEach((f,i)=>setTimeout(()=>playNote(f,'sine',.4,.15),i*100));}
+function playDefeat(){[440,415,392,370,349].forEach((f,i)=>setTimeout(()=>playNote(f,'sine',.3,.12),i*120));}
+// ── STATE ──────────────────────────────────────────────────
+const state={
+  currency:'USD',cart:[],user:null,orders:[],
+  streak:{count:parseInt(localStorage.getItem('streak')||'0'),xp:parseInt(localStorage.getItem('xp')||'0'),lastDate:localStorage.getItem('streakDate')||''},
+  notes:JSON.parse(localStorage.getItem('maesterNotes')||'[]'),
+  readingHours:parseFloat(localStorage.getItem('readingHours')||'0'),
+  selectedBook:null,selectedFormat:'physical',carouselIdx:0,currentCommunity:0,
+  chatState:'idle',pendingBookId:null,pendingBookTitle:null,
+  gemGame:null,snakeGame:null,
+  transactions:JSON.parse(localStorage.getItem('maesterTxns')||'[]'),
+  // ── NEW: address state ──
+  addresses:JSON.parse(localStorage.getItem('maesterAddresses')||'[]'),
+  showAddressForm:false,
+};
+// ── 105-BOOK DATASET ──────────────────────────────────────
+function mkBook(id,title,author,genre,emotion,traits,lore,reviews,prices,rarity,pages,year,svgTheme,gradients){
+  const g=['Spredes','Gilded Accents','Debossed Hardcover','Ribbon Bookmark','Sewn Binding'];
+  const t=traits||[g[id%5],g[(id+1)%5]];
+  return{id,title,author,genre,emotionalPrescription:emotion,traits:t,lore,reviews:reviews||[{stars:5,text:'A transcendent work that reshapes the soul.',author:'A.Thornton'},{stars:4,text:'Required reading for any serious scholar.',author:'E.Voss'},{stars:5,text:'Each page a revelation, each chapter a journey.',author:'M.Calloway'}],prices:{digital:prices[0],audio:prices[1],physical:prices[2]},stock:{digital:999,audio:50+id*3%40,physical:5+id%20},rarity,pages,year,svgTheme,gradients,formats:['digital','audio','physical'],related:[(id+1)%105+1,(id+2)%105+1,(id+3)%105+1]};
+}
+const BOOKS=[
+mkBook(1,'The Divine Comedy','Dante Alighieri','Epic Poetry','Transcendent',['Gilded Accents','Debossed Hardcover'],'An epic narrative poem of the afterlife journey through Inferno, Purgatorio, and Paradiso. A cornerstone of world literature that illuminates the human condition.',[{stars:5,text:'Dante\'s vision of eternity is unmatched in its scope and beauty.',author:'R.Sinclair'},{stars:5,text:'The most profound journey ever committed to verse.',author:'T.Nightingale'}],[8,14,42],'Legendary',798,1320,'inferno','#8b1a1a,#c8a96b'),
+mkBook(2,'Paradise Lost','John Milton','Epic Poetry','Transcendent',['Sewn Binding','Gilded Accents'],'Milton\'s grand theological epic follows Satan\'s rebellion and humanity\'s fall from grace in a sweeping baroque masterpiece of English verse.',[{stars:5,text:'Milton\'s command of verse is simply godlike.',author:'P.Ashworth'}],[7,13,38],'Legendary',453,1667,'paradise','#1a2a4a,#c8a96b'),
+mkBook(3,'Meditations','Marcus Aurelius','Philosophy','Philosophical',['Ribbon Bookmark','Spredes'],'The private writings of a Roman Emperor — twelve books of Stoic philosophy and personal reflection that have guided thinkers for two millennia.',[{stars:5,text:'The most honest philosophical work ever written.',author:'K.Brennan'}],[5,10,28],'Legendary',256,180,'stoic','#2a2a1a,#a8893b'),
+mkBook(4,'Beowulf','Anonymous','Epic Poetry','Thrilling',['Debossed Hardcover','Sewn Binding'],'The oldest surviving Old English epic poem. A warrior-king battles monstrous foes in a world of darkness, mead-halls, and ancestral glory.',[{stars:5,text:'A window into the soul of a lost civilization.',author:'G.Fletcher'}],[4,9,24],'Legendary',96,750,'beowulf','#1a0a0a,#8b6b3b'),
+mkBook(5,'The Republic','Plato','Philosophy','Philosophical',['Gilded Accents','Ribbon Bookmark'],'Plato\'s foundational dialogue exploring justice, the ideal state, and the philosopher-king. The bedrock of Western political thought and epistemology.',[{stars:5,text:'Two and a half millennia later, still completely relevant.',author:'A.Vance'}],[5,11,30],'Legendary',416,-380,'republic','#1a1a2a,#7a7aaa'),
+mkBook(6,'Don Quixote','Miguel de Cervantes','Novel','Cathartic',['Spredes','Gilded Accents'],'The misadventures of an eccentric nobleman who loses himself in chivalric romances. Often cited as the first modern novel and a meditation on illusion and reality.',[{stars:5,text:'The great comic-tragic novel of all time.',author:'L.Vargas'}],[7,13,36],'Legendary',1072,1605,'quixote','#2a1a0a,#c8a96b'),
+mkBook(7,'Dracula','Bram Stoker','Gothic Horror','Thrilling',['Debossed Hardcover','Sewn Binding'],'The epistolary Gothic masterpiece that birthed the vampire as modern archetype. Stoker\'s Transylvanian count is the shadow that never fades.',[{stars:5,text:'Gothic atmosphere so thick you can cut it with a stake.',author:'N.Hollis'}],[5,10,26],'Rare',418,1897,'dracula','#1a0a1a,#8b1a1a'),
+mkBook(8,'Frankenstein','Mary Shelley','Gothic Horror','Cathartic',['Gilded Accents','Ribbon Bookmark'],'Shelley\'s revolutionary novel questions the ethics of creation and the nature of humanity. The original story of science outpacing conscience.',[{stars:5,text:'A philosophical bombshell wrapped in Gothic horror.',author:'C.Wren'}],[5,10,25],'Legendary',280,1818,'frank','#0a1a0a,#4d8f64'),
+mkBook(9,'The Odyssey','Homer','Epic Poetry','Transcendent',['Sewn Binding','Debossed Hardcover'],'Homer\'s epic recounting Odysseus\'s decade-long journey home from the Trojan War. The archetypal hero\'s journey distilled to its purest form.',[{stars:5,text:'Every adventure since owes a debt to Homer.',author:'D.Parrish'}],[6,12,34],'Legendary',324,-800,'odyssey','#0a1a2a,#c8a96b'),
+mkBook(10,'Hamlet','William Shakespeare','Drama','Melancholic',['Gilded Accents','Spredes'],'Shakespeare\'s most psychologically profound tragedy. The Prince of Denmark wrestles with grief, betrayal, and the impossibility of decisive action in a corrupt world.',[{stars:5,text:'To read Hamlet is to understand yourself.',author:'F.Howell'}],[5,11,29],'Legendary',170,1603,'hamlet','#1a1a0a,#b8afa8'),
+mkBook(11,'Crime and Punishment','Fyodor Dostoevsky','Literary Fiction','Cathartic',['Ribbon Bookmark','Sewn Binding'],'Raskolnikov\'s psychological unraveling after committing murder illuminates the burden of guilt and the path to redemption in czarist St. Petersburg.',[{stars:5,text:'Dostoevsky\'s greatest achievement in moral psychology.',author:'I.Blackwood'}],[6,12,32],'Legendary',551,1866,'crime','#1a0a0a,#8b1a1a'),
+mkBook(12,'War and Peace','Leo Tolstoy','Literary Fiction','Transcendent',['Debossed Hardcover','Gilded Accents'],'Tolstoy\'s magnum opus sweeps across Napoleonic Russia, interweaving the lives of aristocratic families against the backdrop of world-historical upheaval.',[{stars:5,text:'The grandest novel ever written — period.',author:'O.Bergmann'}],[8,15,48],'Legendary',1225,1869,'war','#1a0a0a,#c8a96b'),
+mkBook(13,'Anna Karenina','Leo Tolstoy','Literary Fiction','Melancholic',['Spredes','Ribbon Bookmark'],'Tolstoy\'s portrait of a passionate noblewoman trapped between love and social convention. A piercing examination of society, family, and moral freedom.',[{stars:5,text:'The most complete portrait of a woman in all literature.',author:'M.Sinclair'}],[7,13,38],'Legendary',964,1878,'anna','#1a0a1a,#c8a96b'),
+mkBook(14,'The Brothers Karamazov','Fyodor Dostoevsky','Literary Fiction','Philosophical',['Sewn Binding','Debossed Hardcover'],'Dostoevsky\'s final masterpiece: a parricide case that becomes a meditation on faith, doubt, free will, and the Russian soul in its most turbulent expression.',[{stars:5,text:'The greatest novel ever written, bar none.',author:'H.Castle'}],[7,14,40],'Legendary',824,1880,'brothers','#1a1a0a,#c8a96b'),
+mkBook(15,'Ulysses','James Joyce','Literary Fiction','Philosophical',['Gilded Accents','Spredes'],'Joyce\'s radical stream-of-consciousness novel follows Leopold Bloom through a single day in Dublin. The most audacious formal experiment in the English novel.',[{stars:4,text:'Difficult but rewarding — a universe in a single day.',author:'T.Crane'}],[8,15,45],'Legendary',732,1922,'ulysses','#0a1a1a,#c8a96b'),
+mkBook(16,'Moby-Dick','Herman Melville','Literary Fiction','Philosophical',['Debossed Hardcover','Sewn Binding'],'Melville\'s obsessive pursuit of the white whale becomes a meditation on fate, madness, and man\'s hubris against the indifferent sea.',[{stars:5,text:'Every page burns with dark fire.',author:'P.Whitney'}],[6,12,35],'Legendary',720,1851,'moby','#0a0a1a,#5488b8'),
+mkBook(17,'Pride and Prejudice','Jane Austen','Novel','Cathartic',['Ribbon Bookmark','Gilded Accents'],'Austen\'s witty and socially acute romance follows the Bennet sisters through the trials of courtship in Regency England. A timeless comedy of manners.',[{stars:5,text:'Austen\'s irony is a precision instrument.',author:'C.Dalton'}],[5,10,26],'Rare',432,1813,'pride','#1a1a0a,#c8a96b'),
+mkBook(18,'Jane Eyre','Charlotte Brontë','Gothic Romance','Cathartic',['Spredes','Debossed Hardcover'],'The passionate and morally fierce orphan Jane Eyre navigates class, desire, and identity. The first great feminist novel in English literature.',[{stars:5,text:'Jane Eyre is every reader\'s alter ego.',author:'A.Harlow'}],[5,10,27],'Rare',500,1847,'jane','#1a0a1a,#c8a96b'),
+mkBook(19,'Wuthering Heights','Emily Brontë','Gothic Romance','Melancholic',['Sewn Binding','Ribbon Bookmark'],'Heathcliff and Catherine\'s doomed love haunts the Yorkshire moors in Brontë\'s wild, structurally ambitious Gothic romance. Love and revenge across generations.',[{stars:5,text:'No love story in English cuts as deep.',author:'S.Vane'}],[5,10,25],'Rare',464,1847,'wuther','#0a0a1a,#8b6b3b'),
+mkBook(20,'The Count of Monte Cristo','Alexandre Dumas','Adventure','Thrilling',['Gilded Accents','Debossed Hardcover'],'Edmond Dantès\'s spectacular transformation from imprisoned sailor to the mysterious Count. The ultimate revenge narrative, exquisitely plotted.',[{stars:5,text:'The most satisfying revenge story ever told.',author:'R.Fontaine'}],[7,13,38],'Rare',1276,1846,'monte','#0a1a0a,#c8a96b'),
+mkBook(21,'Les Misérables','Victor Hugo','Literary Fiction','Cathartic',['Sewn Binding','Spredes'],'Hugo\'s great humanist novel traces Jean Valjean\'s decades-long struggle for redemption against the backdrop of revolutionary Paris.',[{stars:5,text:'A cathedral built from words.',author:'A.Dubois'}],[7,14,42],'Legendary',1463,1862,'miserables','#1a0a0a,#5488b8'),
+mkBook(22,'The Picture of Dorian Gray','Oscar Wilde','Gothic Horror','Melancholic',['Ribbon Bookmark','Gilded Accents'],'Wilde\'s Faustian tale of eternal youth and moral corruption. The portrait that ages while its subject pursues pleasure without consequence.',[{stars:5,text:'Wilde\'s sharpest and darkest work.',author:'C.Frost'}],[5,10,26],'Rare',254,1890,'dorian','#1a1a0a,#8b1a1a'),
+mkBook(23,'1984','George Orwell','Dystopian','Thrilling',['Debossed Hardcover','Sewn Binding'],'Winston Smith\'s rebellion against Big Brother in a totalitarian superstate. Orwell\'s prophetic warning has only grown more urgent with each decade.',[{stars:5,text:'More relevant today than the day it was written.',author:'K.Mercer'}],[5,10,24],'Rare',328,1949,'1984','#0a0a0a,#b85454'),
+mkBook(24,'Brave New World','Aldous Huxley','Dystopian','Philosophical',['Spredes','Ribbon Bookmark'],'Huxley\'s vision of a pleasure-controlled utopia where freedom is sacrificed for stability. The dystopia of consent rather than coercion.',[{stars:4,text:'The more comfortable dystopia, and thus the more insidious.',author:'T.Henly'}],[5,10,24],'Rare',311,1932,'brave','#0a1a1a,#c8a96b'),
+mkBook(25,'The Master and Margarita','Mikhail Bulgakov','Literary Fiction','Transcendent',['Gilded Accents','Debossed Hardcover'],'The Devil visits Stalinist Moscow accompanied by a retinue of demons. A satire of Soviet society woven with Biblical narrative and magical realism.',[{stars:5,text:'A book that could only have been written in secret.',author:'V.Morozov'}],[6,12,32],'Legendary',480,1967,'master','#1a0a1a,#c8a96b'),
+mkBook(26,'One Hundred Years of Solitude','Gabriel García Márquez','Literary Fiction','Transcendent',['Sewn Binding','Spredes'],'Seven generations of the Buendía family in magical Macondo. The definitive magic realist novel and the cornerstone of Latin American literature.',[{stars:5,text:'García Márquez conjures an entire universe.',author:'L.Fuentes'}],[6,12,34],'Legendary',417,1967,'solitude','#1a1a0a,#4d8f64'),
+mkBook(27,'The Trial','Franz Kafka','Literary Fiction','Philosophical',['Ribbon Bookmark','Gilded Accents'],'Josef K. is arrested and prosecuted by a remote, inaccessible authority. Kafka\'s parable of modern bureaucratic absurdity and existential dread.',[{stars:5,text:'Kafka understood something the rest of us are still catching up to.',author:'H.Brand'}],[5,10,25],'Rare',255,1925,'trial','#0a0a1a,#7a706a'),
+mkBook(28,'The Castle','Franz Kafka','Literary Fiction','Melancholic',['Debossed Hardcover','Sewn Binding'],'K. the land surveyor struggles to reach the enigmatic Castle that governs the village. Kafka\'s unfinished masterpiece of futile striving.',[{stars:4,text:'The quintessential novel of alienation.',author:'E.Graves'}],[5,10,25],'Rare',352,1926,'castle','#0a0a0a,#7a706a'),
+mkBook(29,'Lolita','Vladimir Nabokov','Literary Fiction','Cathartic',['Gilded Accents','Spredes'],'Nabokov\'s controversial and brilliantly crafted novel told from the perspective of an unreliable narrator whose prose beauty masks profound moral rot.',[{stars:4,text:'The most beautiful prose in the American canon.',author:'P.Strand'}],[6,12,32],'Rare',336,1955,'lolita','#1a0a1a,#c8a96b'),
+mkBook(30,'The Sound and the Fury','William Faulkner','Literary Fiction','Melancholic',['Ribbon Bookmark','Sewn Binding'],'Faulkner\'s stream-of-consciousness portrait of the declining Compson family through four distinct narrative voices. Southern Gothic at its most demanding.',[{stars:5,text:'A novel that rewards every rereading.',author:'J.Claytor'}],[5,11,28],'Rare',336,1929,'fury','#1a0a0a,#7a706a'),
+mkBook(31,'To the Lighthouse','Virginia Woolf','Literary Fiction','Melancholic',['Debossed Hardcover','Gilded Accents'],'Woolf\'s lyrical modernist novel captures the flux of consciousness over decades in the lives of the Ramsay family on the Scottish coast.',[{stars:5,text:'Woolf renders interiority like no other.',author:'I.Shore'}],[5,10,26],'Rare',209,1927,'lighthouse','#0a1a2a,#c8a96b'),
+mkBook(32,'Mrs Dalloway','Virginia Woolf','Literary Fiction','Melancholic',['Spredes','Ribbon Bookmark'],'A single London day in 1923 rendered in luminous stream of consciousness. Woolf maps the interior lives of Clarissa Dalloway and shell-shocked veteran Septimus Smith.',[{stars:5,text:'The most interior novel in the language.',author:'R.Bell'}],[5,10,25],'Rare',194,1925,'dalloway','#1a1a2a,#c8a96b'),
+mkBook(33,'Heart of Darkness','Joseph Conrad','Literary Fiction','Philosophical',['Sewn Binding','Debossed Hardcover'],'Marlow\'s journey into the Belgian Congo to find the enigmatic Kurtz. Conrad\'s novella strips civilization to its hypocritical core.',[{stars:5,text:'A short book with the weight of a continent.',author:'A.Osei'}],[4,8,20],'Rare',112,1899,'heart','#0a0a0a,#4d8f64'),
+mkBook(34,'The Stranger','Albert Camus','Philosophy','Philosophical',['Gilded Accents','Spredes'],'Meursault\'s detached account of his life and a senseless murder on an Algerian beach. Camus distills existentialism and absurdism to a single human life.',[{stars:5,text:'Camus stripped existence to its barest truth.',author:'J.Leconte'}],[4,9,22],'Rare',123,1942,'stranger','#1a1a1a,#c8a96b'),
+mkBook(35,'Nausea','Jean-Paul Sartre','Philosophy','Philosophical',['Ribbon Bookmark','Sewn Binding'],'Roquentin\'s diary records his growing existential horror at the sheer contingency of existence. The philosophical novel as visceral experience.',[{stars:4,text:'Sartre makes philosophy into horror.',author:'B.Renaud'}],[4,9,22],'Rare',178,1938,'nausea','#0a1a0a,#4d8f64'),
+mkBook(36,'In Search of Lost Time','Marcel Proust','Literary Fiction','Transcendent',['Debossed Hardcover','Gilded Accents'],'Proust\'s seven-volume magnum opus explores memory, time, love, and society through the narrator\'s introspective journey. The longest novel in world literature.',[{stars:5,text:'There is nothing like it in all of literature.',author:'C.Gaudin'}],[9,16,56],'Legendary',3031,1913,'proust','#1a0a1a,#c8a96b'),
+mkBook(37,'Faust','Johann Wolfgang von Goethe','Drama','Transcendent',['Gilded Accents','Spredes'],'Goethe\'s two-part drama about the scholar who sells his soul to Mephistopheles in a bargain for infinite knowledge. The German literary masterwork.',[{stars:5,text:'The bargain at the heart of modernity.',author:'H.Richter'}],[6,12,34],'Legendary',464,1832,'faust','#1a0a0a,#c8a96b'),
+mkBook(38,'The Iliad','Homer','Epic Poetry','Thrilling',['Sewn Binding','Debossed Hardcover'],'Homer\'s epic of the Trojan War\'s final weeks, from the wrath of Achilles to the funeral of Hector. War and glory rendered in imperishable verse.',[{stars:5,text:'The oldest war story and still the best.',author:'D.Marshall'}],[6,12,32],'Legendary',683,-800,'iliad','#1a0a0a,#c8a96b'),
+mkBook(39,'Aeneid','Virgil','Epic Poetry','Transcendent',['Ribbon Bookmark','Gilded Accents'],'Virgil\'s Augustan epic follows the Trojan prince Aeneas on his divinely sanctioned journey to found Rome. Roman epic poetry at its supreme height.',[{stars:5,text:'Virgil\'s command of the epic form is absolute.',author:'A.Colman'}],[6,12,32],'Legendary',442,-19,'aeneid','#0a0a1a,#c8a96b'),
+mkBook(40,'Metamorphoses','Ovid','Poetry','Transcendent',['Debossed Hardcover','Sewn Binding'],'Ovid\'s witty and encyclopedic poem retells 250 myths from the creation of the world to the apotheosis of Julius Caesar. The most influential book of classical mythology.',[{stars:5,text:'The sourcebook for Western art and literature.',author:'P.Nash'}],[5,11,30],'Legendary',582,-8,'ovid','#0a1a0a,#c8a96b'),
+mkBook(41,'The Canterbury Tales','Geoffrey Chaucer','Poetry','Cathartic',['Gilded Accents','Spredes'],'Chaucer\'s pilgrims compete in a tale-telling contest. The foundational work of English literature, mixing comedy, romance, philosophy, and bawdy satire.',[{stars:5,text:'The first great flowering of the English literary tradition.',author:'C.Aldous'}],[5,11,30],'Legendary',504,1387,'chaucer','#1a0a0a,#c8a96b'),
+mkBook(42,'Don Giovanni','Lorenzo Da Ponte','Libretto','Thrilling',['Ribbon Bookmark','Debossed Hardcover'],'The definitive seducer-anti-hero of Western art. Da Ponte\'s libretto for Mozart\'s opera follows the dissolution of the libertine Don Giovanni.',[{stars:4,text:'The eternal anti-hero set to perfect music.',author:'F.Landi'}],[4,8,22],'Uncommon',120,1787,'giovanni','#1a0a1a,#8b1a8b'),
+mkBook(43,'The Tempest','William Shakespeare','Drama','Philosophical',['Sewn Binding','Gilded Accents'],'Shakespeare\'s late romance: the exiled Duke Prospero controls a magical island. Often read as Shakespeare\'s farewell to the stage and to art itself.',[{stars:5,text:'The most mystical of all Shakespeare\'s plays.',author:'M.Trent'}],[4,9,24],'Rare',96,1611,'tempest','#0a0a1a,#5488b8'),
+mkBook(44,'King Lear','William Shakespeare','Drama','Cathartic',['Debossed Hardcover','Spredes'],'The aging King Lear divides his kingdom with tragic consequences. The most devastating of Shakespeare\'s tragedies — grief, madness, and love on a cosmic scale.',[{stars:5,text:'The most devastating play in the English language.',author:'A.Cross'}],[4,9,24],'Rare',120,1606,'lear','#1a0a0a,#7a706a'),
+mkBook(45,'Macbeth','William Shakespeare','Drama','Thrilling',['Ribbon Bookmark','Sewn Binding'],'The Scottish general who murders his king and spirals into paranoia. Shakespeare\'s most compact and electrifying tragedy, drenched in blood and prophecy.',[{stars:5,text:'Shakespeare at his most terrifyingly compact.',author:'R.Clive'}],[4,9,23],'Rare',96,1606,'macbeth','#0a0a0a,#8b1a1a'),
+mkBook(46,'The Divine Comedy Vol II','Dante Alighieri','Epic Poetry','Philosophical',['Gilded Accents','Debossed Hardcover'],'The Purgatorio: souls in torment and transformation ascending toward paradise. A meditation on time, sin, and the purgation of the human will.',[{stars:5,text:'The middle canticle is the richest of the three.',author:'S.Arditi'}],[7,13,40],'Legendary',248,1315,'purgatorio','#1a1a0a,#c8a96b'),
+mkBook(47,'Symposium','Plato','Philosophy','Philosophical',['Spredes','Ribbon Bookmark'],'Plato\'s dialogue on the nature of love, delivered as speeches at a drinking party. Socrates transmits Diotima\'s ladder of love from the physical to the divine.',[{stars:5,text:'The most beautiful philosophical text of antiquity.',author:'H.Ames'}],[4,9,22],'Rare',76,-385,'symposium','#0a0a1a,#c8a96b'),
+mkBook(48,'Nicomachean Ethics','Aristotle','Philosophy','Philosophical',['Debossed Hardcover','Sewn Binding'],'Aristotle\'s systematic account of eudaimonia — human flourishing — through virtue ethics. The foundational text of moral philosophy in the Western tradition.',[{stars:5,text:'Two thousand years old and still the best guide to a good life.',author:'T.Ingram'}],[5,10,28],'Legendary',368,-350,'ethics','#1a1a0a,#a8893b'),
+mkBook(49,'Being and Time','Martin Heidegger','Philosophy','Philosophical',['Gilded Accents','Spredes'],'Heidegger\'s foundational analysis of Dasein — human being-in-the-world — and the existential structures of care, temporality, and authenticity.',[{stars:4,text:'Demanding and rewarding in equal measure.',author:'K.Schiller'}],[6,12,35],'Rare',589,1927,'heidegger','#0a0a1a,#7a706a'),
+mkBook(50,'Thus Spoke Zarathustra','Friedrich Nietzsche','Philosophy','Transcendent',['Sewn Binding','Ribbon Bookmark'],'Nietzsche\'s poetic-philosophical masterwork in which the prophet Zarathustra descends from his mountain to proclaim the death of God and the coming of the Übermensch.',[{stars:5,text:'The most intoxicating philosophical writing ever produced.',author:'A.Reiss'}],[5,11,30],'Legendary',352,1883,'zarathustra','#1a0a0a,#c8a96b'),
+mkBook(51,'The Name of the Rose','Umberto Eco','Mystery','Thrilling',['Gilded Accents','Debossed Hardcover'],'A medieval monk investigates a series of murders in a labyrinthine monastery. Eco\'s post-modern historical thriller is dense with semiotics and erudition.',[{stars:5,text:'The most learned thriller ever written.',author:'F.Marinetti'}],[6,12,33],'Rare',502,1980,'rose','#1a0a0a,#c8a96b'),
+mkBook(52,'Perfume','Patrick Süskind','Literary Fiction','Thrilling',['Spredes','Sewn Binding'],'The story of Jean-Baptiste Grenouille, born without a personal scent but gifted with a preternatural nose, who murders young women to create the perfect perfume.',[{stars:5,text:'Utterly original and profoundly disturbing.',author:'B.Wolff'}],[5,10,26],'Rare',263,1985,'perfume','#1a1a0a,#c8a96b'),
+mkBook(53,'The Tin Drum','Günter Grass','Literary Fiction','Cathartic',['Ribbon Bookmark','Debossed Hardcover'],'Oskar Matzerath, who at age three refuses to grow and beats his tin drum, narrates the history of Danzig through the rise and fall of Nazism.',[{stars:5,text:'The most important German novel of the 20th century.',author:'K.Schreiber'}],[6,12,32],'Rare',600,1959,'tindrum','#1a0a0a,#c8a96b'),
+mkBook(54,'Midnight\'s Children','Salman Rushdie','Literary Fiction','Transcendent',['Gilded Accents','Spredes'],'Saleem Sinai, born at midnight on Indian independence, is telepathically connected to all other midnight\'s children. A postcolonial magic realist epic.',[{stars:5,text:'Rushdie\'s pyrotechnic prose is staggering.',author:'A.Chatterjee'}],[6,12,34],'Rare',536,1981,'midnight','#0a0a1a,#c8a96b'),
+mkBook(55,'The Cairo Trilogy','Naguib Mahfouz','Literary Fiction','Transcendent',['Sewn Binding','Ribbon Bookmark'],'Three generations of a Cairo merchant family from World War I through the 1950s. The definitive novel of Egyptian society and Arab modernity.',[{stars:5,text:'A monument of Arabic literature.',author:'M.Hassan'}],[7,14,40],'Rare',1313,1956,'cairo','#1a1a0a,#c8a96b'),
+mkBook(56,'The Alchemist','Paulo Coelho','Novel','Philosophical',['Debossed Hardcover','Gilded Accents'],'The parable of Santiago, an Andalusian shepherd boy who travels in search of worldly treasure and finds the secrets of the universe.',[{stars:4,text:'A simple fable with a profound message.',author:'R.Alves'}],[5,10,26],'Uncommon',208,1988,'alchemist','#1a1a0a,#c8a96b'),
+mkBook(57,'The Unbearable Lightness of Being','Milan Kundera','Literary Fiction','Melancholic',['Spredes','Sewn Binding'],'Kundera\'s philosophical novel explores the lives of two couples during the Prague Spring. Love, politics, and the eternal question of weight versus lightness.',[{stars:5,text:'Kundera makes philosophy into desire.',author:'P.Novak'}],[5,11,28],'Rare',320,1984,'lightness','#0a0a1a,#c8a96b'),
+mkBook(58,'Beloved','Toni Morrison','Literary Fiction','Cathartic',['Ribbon Bookmark','Debossed Hardcover'],'Sethe, a former enslaved woman, is haunted by the ghost of her dead daughter. Morrison\'s Pulitzer-winning masterpiece confronts the trauma of American slavery.',[{stars:5,text:'Morrison\'s most devastating and necessary work.',author:'C.Jones'}],[5,11,28],'Legendary',321,1987,'beloved','#1a0a0a,#8b1a1a'),
+mkBook(59,'The God of Small Things','Arundhati Roy','Literary Fiction','Cathartic',['Gilded Accents','Spredes'],'Roy\'s debut novel follows the Ipe family in Kerala through a tragedy that reverberates through time. A lyrical meditation on caste, love, and forbidden desire.',[{stars:5,text:'Roy\'s prose is incandescent.',author:'S.Krishnan'}],[5,10,27],'Rare',321,1997,'smallthings','#0a1a0a,#c8a96b'),
+mkBook(60,'The Magic Mountain','Thomas Mann','Literary Fiction','Philosophical',['Sewn Binding','Ribbon Bookmark'],'Hans Castorp visits a sanatorium in the Swiss Alps and stays for seven years, engaging in philosophical debate as Europe sleepwalks toward the Great War.',[{stars:5,text:'Mann\'s intellectual ambition is breathtaking.',author:'H.Fischer'}],[7,13,38],'Rare',720,1924,'mountain','#0a0a1a,#c8a96b'),
+mkBook(61,'Steppenwolf','Hermann Hesse','Literary Fiction','Melancholic',['Debossed Hardcover','Gilded Accents'],'Harry Haller, the Steppenwolf, lives between the bourgeois world and the wolf of his imagination. Hesse\'s crisis novel of the divided self in modernity.',[{stars:4,text:'The essential novel for every existential crisis.',author:'M.Koch'}],[5,10,25],'Rare',218,1927,'steppenwolf','#1a0a0a,#8b1a1a'),
+mkBook(62,'Siddhartha','Hermann Hesse','Novel','Transcendent',['Ribbon Bookmark','Spredes'],'Siddhartha\'s spiritual journey in ancient India toward enlightenment. Hesse\'s luminous novel blends Buddhist, Hindu, and Western thought.',[{stars:5,text:'A short novel that leaves a permanent mark.',author:'A.Bauer'}],[4,9,22],'Uncommon',152,1922,'siddhartha','#1a1a0a,#c8a96b'),
+mkBook(63,'The Glass Bead Game','Hermann Hesse','Literary Fiction','Transcendent',['Gilded Accents','Sewn Binding'],'In a future intellectual elite, Joseph Knecht masters the supreme game of the synthesis of all human knowledge. Hesse\'s Nobel Prize-winning magnum opus.',[{stars:5,text:'Hesse\'s most ambitious and realized vision.',author:'P.Hartmann'}],[6,12,34],'Rare',558,1943,'glassbead','#0a0a1a,#c8a96b'),
+mkBook(64,'Doctor Zhivago','Boris Pasternak','Literary Fiction','Melancholic',['Debossed Hardcover','Ribbon Bookmark'],'The physician-poet Yuri Zhivago is caught between love and revolution as Russia convulses through war, revolution, and Stalinist terror.',[{stars:5,text:'A love story as vast as Russia itself.',author:'N.Volkov'}],[6,12,33],'Rare',560,1957,'zhivago','#0a0a1a,#5488b8'),
+mkBook(65,'And Quiet Flows the Don','Mikhail Sholokhov','Literary Fiction','Cathartic',['Spredes','Gilded Accents'],'The great epic of the Don Cossacks through World War I, the Revolution, and Civil War. Sholokhov\'s massive four-volume Nobel Prize-winning saga.',[{stars:5,text:'The Russian Iliad of the 20th century.',author:'D.Romanov'}],[7,14,40],'Rare',720,1940,'don','#1a0a0a,#c8a96b'),
+mkBook(66,'Invisible Man','Ralph Ellison','Literary Fiction','Philosophical',['Sewn Binding','Debossed Hardcover'],'An unnamed Black American narrator explores racial identity and invisibility in 20th-century America. Ellison\'s novel remains the most searching examination of American racial consciousness.',[{stars:5,text:'The great novel of Black American experience.',author:'J.Williams'}],[5,11,28],'Rare',581,1952,'invisible','#0a0a0a,#c8a96b'),
+mkBook(67,'The Grapes of Wrath','John Steinbeck','Literary Fiction','Cathartic',['Gilded Accents','Ribbon Bookmark'],'The Joad family\'s migration from the Dust Bowl to California. Steinbeck\'s social novel of working-class dignity in the face of corporate indifference.',[{stars:5,text:'American literature\'s great social cry.',author:'M.Roberts'}],[5,11,28],'Rare',464,1939,'grapes','#1a0a0a,#c8a96b'),
+mkBook(68,'East of Eden','John Steinbeck','Literary Fiction','Transcendent',['Debossed Hardcover','Spredes'],'Steinbeck\'s multigenerational saga set in the Salinas Valley, retelling the story of Cain and Abel. His most ambitious and personal novel.',[{stars:5,text:'Steinbeck at the very peak of his powers.',author:'A.Garland'}],[5,11,30],'Rare',601,1952,'eden','#0a1a0a,#c8a96b'),
+mkBook(69,'For Whom the Bell Tolls','Ernest Hemingway','Novel','Thrilling',['Sewn Binding','Gilded Accents'],'Robert Jordan\'s mission to blow a bridge behind enemy lines during the Spanish Civil War. Hemingway\'s most sustained and compassionate novel.',[{stars:5,text:'Hemingway\'s masterwork — lean and devastating.',author:'C.Hargreaves'}],[5,10,26],'Rare',480,1940,'bell','#1a0a0a,#b85454'),
+mkBook(70,'A Farewell to Arms','Ernest Hemingway','Novel','Melancholic',['Ribbon Bookmark','Debossed Hardcover'],'An American ambulance driver\'s love affair with a British nurse against the backdrop of World War I Italy. Hemingway\'s most emotionally devastating novel.',[{stars:5,text:'The saddest love story in American fiction.',author:'P.Bishop'}],[5,10,25],'Rare',332,1929,'farewell','#1a1a0a,#5488b8'),
+mkBook(71,'The Sun Also Rises','Ernest Hemingway','Novel','Melancholic',['Gilded Accents','Spredes'],'Jake Barnes and Brett Ashley among the Lost Generation in Paris and Pamplona. Hemingway\'s debut novel and the definitive portrait of post-war disillusionment.',[{stars:4,text:'Hemingway invented a new way of feeling sadness.',author:'T.Curtis'}],[4,9,22],'Uncommon',251,1926,'sunrises','#1a0a0a,#c8a96b'),
+mkBook(72,'The Old Man and the Sea','Ernest Hemingway','Novella','Philosophical',['Sewn Binding','Ribbon Bookmark'],'Santiago\'s epic battle with a great marlin in the Gulf Stream. Hemingway\'s Nobel Prize-winning parable of human struggle against an indifferent universe.',[{stars:5,text:'Perfect in every sentence.',author:'J.Morse'}],[4,8,20],'Rare',127,1952,'oldman','#0a1a2a,#c8a96b'),
+mkBook(73,'The Great Gatsby','F. Scott Fitzgerald','Novel','Melancholic',['Debossed Hardcover','Gilded Accents'],'Nick Carraway narrates the tragic story of Jay Gatsby\'s obsession with Daisy Buchanan. The American Dream as beautiful lie.',[{stars:5,text:'The green light at the end of the dock — unforgettable.',author:'M.Chase'}],[4,9,22],'Rare',180,1925,'gatsby','#0a0a1a,#c8a96b'),
+mkBook(74,'Tender Is the Night','F. Scott Fitzgerald','Novel','Melancholic',['Spredes','Sewn Binding'],'Dick Diver\'s gradual dissolution among the Jazz Age expatriates on the French Riviera. Fitzgerald\'s most autobiographical and richest novel.',[{stars:4,text:'Fitzgerald\'s deepest and most heartbreaking work.',author:'R.Steele'}],[5,10,25],'Uncommon',320,1934,'tender','#0a0a1a,#5488b8'),
+mkBook(75,'Light in August','William Faulkner','Literary Fiction','Philosophical',['Gilded Accents','Ribbon Bookmark'],'The interwoven stories of Joe Christmas, Lena Grove, and Reverend Hightower in the American South. Faulkner\'s meditation on race, religion, and identity.',[{stars:5,text:'Faulkner\'s most fully realized world.',author:'A.Beaumont'}],[5,11,28],'Rare',507,1932,'light','#1a0a0a,#c8a96b'),
+mkBook(76,'Absalom, Absalom!','William Faulkner','Literary Fiction','Philosophical',['Debossed Hardcover','Spredes'],'Thomas Sutpen\'s obsessive attempt to found a dynasty in Mississippi is narrated through multiple competing voices. Faulkner\'s most formally ambitious work.',[{stars:5,text:'The most complex and rewarding novel in American literature.',author:'C.Hollis'}],[5,11,28],'Rare',313,1936,'absalom','#1a0a0a,#8b1a1a'),
+mkBook(77,'To Kill a Mockingbird','Harper Lee','Novel','Cathartic',['Sewn Binding','Gilded Accents'],'Scout Finch\'s childhood memory of her father Atticus defending a Black man accused of rape in Depression-era Alabama. The great American novel of racial justice.',[{stars:5,text:'Atticus Finch is the noblest character in American fiction.',author:'B.Harper'}],[4,9,22],'Rare',281,1960,'mockingbird','#1a0a0a,#c8a96b'),
+mkBook(78,'The Catcher in the Rye','J.D. Salinger','Novel','Cathartic',['Ribbon Bookmark','Debossed Hardcover'],'Holden Caulfield\'s weekend of wandering New York City after expulsion from prep school. The voice of adolescent alienation that echoed through generations.',[{stars:4,text:'Holden Caulfield speaks for every alienated teenager ever.',author:'M.Dean'}],[4,9,21],'Uncommon',277,1951,'catcher','#1a1a1a,#c8a96b'),
+mkBook(79,'Invisible Cities','Italo Calvino','Literary Fiction','Transcendent',['Gilded Accents','Spredes'],'Marco Polo describes fifty-five fantastical cities to Kublai Khan. Calvino\'s most beloved work: a meditation on memory, desire, and the act of storytelling itself.',[{stars:5,text:'The most beautiful short novel ever written.',author:'P.Ronchi'}],[4,9,22],'Rare',165,1972,'cities','#0a0a1a,#c8a96b'),
+mkBook(80,'If on a Winter\'s Night a Traveler','Italo Calvino','Literary Fiction','Philosophical',['Sewn Binding','Ribbon Bookmark'],'A metafictional novel in which the reader becomes the protagonist searching for the continuation of a book that keeps transforming into other books.',[{stars:5,text:'The cleverest game ever played with the novel form.',author:'G.Alberti'}],[4,9,22],'Rare',260,1979,'winter','#0a0a1a,#5488b8'),
+mkBook(81,'Pedro Páramo','Juan Rulfo','Literary Fiction','Melancholic',['Debossed Hardcover','Gilded Accents'],'Juan Preciado travels to the ghost town of Comala to find his father Pedro Páramo. Rulfo\'s short masterpiece is the genesis of Latin American magical realism.',[{stars:5,text:'The book that made García Márquez believe in magic realism.',author:'J.Fuentes'}],[4,8,20],'Rare',124,1955,'pedro','#1a0a0a,#7a706a'),
+mkBook(82,'Chronicle of a Death Foretold','Gabriel García Márquez','Literary Fiction','Thrilling',['Spredes','Sewn Binding'],'The story of Santiago Nasar\'s murder, known to everyone in the village beforehand. Márquez\'s most formally perfect novella — fatalism as narrative structure.',[{stars:5,text:'Perfect in every line.',author:'C.Moreno'}],[4,8,20],'Rare',120,1981,'chronicle','#1a0a0a,#c8a96b'),
+mkBook(83,'The Autumn of the Patriarch','Gabriel García Márquez','Literary Fiction','Philosophical',['Ribbon Bookmark','Debossed Hardcover'],'A Caribbean dictator reigns for over two centuries in a single, labyrinthine novel-sentence. Márquez\'s most formally daring and politically charged work.',[{stars:5,text:'The most politically devastating novel from Márquez.',author:'A.Leon'}],[5,10,26],'Rare',271,1975,'patriarch','#1a0a0a,#8b1a1a'),
+mkBook(84,'The House of the Spirits','Isabel Allende','Literary Fiction','Transcendent',['Gilded Accents','Spredes'],'Four generations of the Trueba family in an unnamed South American country, from rural patriarchy through military coup. Magic realism meets political history.',[{stars:5,text:'Allende\'s debut remains her most powerful work.',author:'M.Torres'}],[5,11,28],'Rare',448,1982,'spirits','#1a0a1a,#c8a96b'),
+mkBook(85,'Things Fall Apart','Chinua Achebe','Literary Fiction','Cathartic',['Sewn Binding','Ribbon Bookmark'],'Okonkwo\'s story of personal ambition and the destruction of Igbo society by British colonial power. The foundational text of African literature in English.',[{stars:5,text:'Every sentence carries the weight of an entire world.',author:'K.Osei'}],[4,9,22],'Rare',215,1958,'okonkwo','#0a1a0a,#c8a96b'),
+mkBook(86,'Season of Migration to the North','Tayeb Salih','Literary Fiction','Philosophical',['Debossed Hardcover','Gilded Accents'],'A Sudanese man\'s return home from England and his encounter with Mustafa Sa\'eed\'s mysterious past. The Arab world\'s response to Conrad\'s Heart of Darkness.',[{stars:5,text:'The greatest Arab novel of the 20th century.',author:'F.Khalil'}],[4,9,22],'Rare',168,1966,'migration','#0a0a1a,#c8a96b'),
+mkBook(87,'The Tin Soldier','Hans Christian Andersen','Fairy Tale','Melancholic',['Ribbon Bookmark','Spredes'],'A beautiful collection of Andersen\'s most celebrated fairy tales, including the steadfast tin soldier, the little mermaid, and the snow queen.',[{stars:4,text:'Childhood forever crystallized in these tales.',author:'E.Hansen'}],[3,7,16],'Uncommon',240,1838,'andersen','#0a0a1a,#5488b8'),
+mkBook(88,'The Arabian Nights','Anonymous','Folk Tales','Transcendent',['Gilded Accents','Debossed Hardcover'],'Scheherazade\'s thousand-and-one tales span the known world from Baghdad to India to Egypt. The great anthology of narrative in the medieval Islamic world.',[{stars:5,text:'The original story collection of world literature.',author:'A.Najjar'}],[6,12,36],'Legendary',864,850,'arabian','#1a0a0a,#c8a96b'),
+mkBook(89,'Grimm\'s Fairy Tales','Brothers Grimm','Folk Tales','Thrilling',['Sewn Binding','Ribbon Bookmark'],'The complete collection of tales gathered by Jacob and Wilhelm Grimm. The foundational fairy tales of the European tradition in their original, unvarnished forms.',[{stars:5,text:'Darker than you remember — and far more resonant.',author:'H.Vogel'}],[4,9,22],'Uncommon',784,1812,'grimm','#1a0a0a,#8b1a1a'),
+mkBook(90,'The Complete Poems of Emily Dickinson','Emily Dickinson','Poetry','Melancholic',['Gilded Accents','Spredes'],'All 1,789 poems of America\'s greatest poet. Dickinson\'s elliptical syntax, slant rhyme, and visionary compression make her utterly incomparable.',[{stars:5,text:'The most original voice in American poetry.',author:'S.Bloom'}],[5,10,28],'Rare',728,1890,'dickinson','#1a1a1a,#c8a96b'),
+mkBook(91,'Leaves of Grass','Walt Whitman','Poetry','Transcendent',['Debossed Hardcover','Sewn Binding'],'Whitman\'s self-published celebration of the American self, the body, democracy, and the open road. The most expansive and democratic poem in the English language.',[{stars:5,text:'Whitman invented American poetry all by himself.',author:'P.Stanton'}],[5,10,27],'Rare',482,1855,'whitman','#0a1a0a,#c8a96b'),
+mkBook(92,'The Waste Land','T.S. Eliot','Poetry','Melancholic',['Ribbon Bookmark','Debossed Hardcover'],'Eliot\'s fragmented, multilingual masterpiece of modernist despair. Five sections of post-war desolation, myth, and quotation that changed poetry forever.',[{stars:5,text:'The most influential poem of the 20th century.',author:'C.Pound'}],[4,8,20],'Rare',48,1922,'wasteland','#0a0a0a,#c8a96b'),
+mkBook(93,'Four Quartets','T.S. Eliot','Poetry','Philosophical',['Gilded Accents','Spredes'],'Eliot\'s final major poetic work: four meditations on time, eternity, and redemption. The most profound religious poetry in the English language.',[{stars:5,text:'Eliot\'s deepest work — and his most hopeful.',author:'R.Tremaine'}],[4,8,20],'Rare',56,1943,'quartets','#0a0a1a,#c8a96b'),
+mkBook(94,'Selected Poems','Pablo Neruda','Poetry','Cathartic',['Sewn Binding','Ribbon Bookmark'],'Neruda\'s most celebrated poems including the Canto General and Twenty Love Poems. The full range of the greatest erotic and political voice in Spanish poetry.',[{stars:5,text:'No one wrote about desire and justice like Neruda.',author:'M.Aguirre'}],[4,9,22],'Rare',396,1950,'neruda','#1a0a0a,#b85454'),
+mkBook(95,'Dead Souls','Nikolai Gogol','Novel','Philosophical',['Debossed Hardcover','Gilded Accents'],'The enigmatic Chichikov travels rural Russia buying up dead serfs from their landowners. Gogol\'s satirical epic of Russian provincial life and national character.',[{stars:5,text:'The first great Russian novel.',author:'P.Makarov'}],[5,10,26],'Rare',432,1842,'deadsouls','#1a0a0a,#c8a96b'),
+mkBook(96,'The Inspector General','Nikolai Gogol','Drama','Cathartic',['Spredes','Sewn Binding'],'A corrupt provincial town mistakes a low-ranking clerk for an undercover government inspector. Gogol\'s savage comedy of bureaucratic corruption.',[{stars:4,text:'The funniest and most damning play about power.',author:'I.Sorokin'}],[4,8,20],'Uncommon',112,1836,'inspector','#1a0a0a,#c8a96b'),
+mkBook(97,'Flatland','Edwin Abbott Abbott','Mathematical Fiction','Philosophical',['Ribbon Bookmark','Gilded Accents'],'A. Square\'s journey through dimensions — from his flat two-dimensional world to the realm of three dimensions. The first science fiction satire on social hierarchy and perception.',[{stars:4,text:'Still the most elegant mathematical novel ever written.',author:'T.Hardy'}],[3,7,16],'Uncommon',96,1884,'flatland','#0a0a1a,#5488b8'),
+mkBook(98,'The Time Machine','H.G. Wells','Science Fiction','Thrilling',['Debossed Hardcover','Spredes'],'The Time Traveller journeys 800,000 years into the future to find humanity divided into two degenerate species. Wells\'s founding science fiction parable of class conflict.',[{stars:4,text:'The original time travel story and still the best.',author:'A.Clarke'}],[4,8,20],'Uncommon',118,1895,'timemachine','#0a0a1a,#5488b8'),
+mkBook(99,'The War of the Worlds','H.G. Wells','Science Fiction','Thrilling',['Sewn Binding','Ribbon Bookmark'],'Martian invaders devastate Victorian England with heat rays and poison gas. Wells\'s colonial allegory reversed: a civilized nation experiencing conquest.',[{stars:5,text:'Wells understood colonialism through the alien invasion.',author:'P.Kingsford'}],[4,8,21],'Uncommon',185,1898,'warworlds','#0a0a0a,#b85454'),
+mkBook(100,'Twenty Thousand Leagues Under the Sea','Jules Verne','Adventure','Thrilling',['Gilded Accents','Debossed Hardcover'],'Captain Nemo\'s submarine Nautilus cruises the ocean depths in Verne\'s masterwork of adventure and scientific speculation.',[{stars:5,text:'Verne\'s imagination was centuries ahead of its time.',author:'F.Delacroix'}],[5,10,27],'Uncommon',336,1870,'nautilus','#0a1a2a,#5488b8'),
+mkBook(101,'Around the World in 80 Days','Jules Verne','Adventure','Thrilling',['Spredes','Sewn Binding'],'Phileas Fogg\'s bet to circumnavigate the globe in 80 days. Verne\'s clockwork adventure perfectly captures the Victorian age of steam, rail, and empire.',[{stars:4,text:'The perfect adventure novel.',author:'H.Grant'}],[4,9,22],'Uncommon',256,1872,'80days','#1a0a0a,#c8a96b'),
+mkBook(102,'The Idiot','Fyodor Dostoevsky','Literary Fiction','Cathartic',['Ribbon Bookmark','Debossed Hardcover'],'Prince Myshkin, a Christ-like epileptic innocent, is destroyed by Russian society. Dostoevsky\'s attempt to portray a genuinely good man in a corrupted world.',[{stars:5,text:'The most humane of all Dostoevsky\'s novels.',author:'A.Karpov'}],[6,12,32],'Rare',656,1869,'idiot','#1a0a1a,#c8a96b'),
+mkBook(103,'Demons','Fyodor Dostoevsky','Literary Fiction','Thrilling',['Gilded Accents','Spredes'],'A band of revolutionary nihilists terrorizes a provincial Russian town. Dostoevsky\'s most politically prescient novel: a prophetic portrait of totalitarian psychology.',[{stars:5,text:'The most politically prophetic novel ever written.',author:'V.Stepanov'}],[6,12,32],'Rare',768,1872,'demons','#0a0a0a,#8b1a1a'),
+mkBook(104,'The Waves','Virginia Woolf','Literary Fiction','Transcendent',['Sewn Binding','Ribbon Bookmark'],'Six characters speak in interior monologues through childhood, adolescence, and old age. Woolf\'s most formally experimental novel: a prose poem disguised as fiction.',[{stars:5,text:'The most radical and beautiful formal experiment in the novel.',author:'M.Rendell'}],[5,11,28],'Rare',297,1931,'waves','#0a1a2a,#5488b8'),
+mkBook(105,'The Arabian Nights Vol II','Anonymous','Folk Tales','Thrilling',['Debossed Hardcover','Gilded Accents'],'The second volume of Scheherazade\'s tales: Sinbad the Sailor, Ali Baba and the Forty Thieves, and a hundred further wonders from the Islamic golden age.',[{stars:5,text:'Every story a universe.',author:'T.Lawrence'}],[5,11,30],'Rare',720,950,'arabian2','#1a0a0a,#c8a96b')
+];
+const GENRES=[...new Set(BOOKS.map(b=>b.genre))].sort();
+const EMOTIONS=[...new Set(BOOKS.map(b=>b.emotionalPrescription))].sort();
+// ── SVG BOOK COVERS ────────────────────────────────────────
+function genCover(book,w=200,h=280){
+  const [c1,c2]=book.gradients.split(',');
+  const initials=book.title.split(' ').slice(0,2).map(w=>w[0]).join('');
+  const lines=[];const words=book.title.split(' ');let line='';const maxW=15;
+  for(const w of words){if((line+' '+w).trim().length>maxW){lines.push(line.trim());line=w;}else line=(line+' '+w).trim();}
+  if(line)lines.push(line.trim());
+  const titleLines=lines.slice(0,3);
+  const rareColor=book.rarity==='Legendary'?'#c8a96b':book.rarity==='Rare'?'#88b8e8':book.rarity==='Uncommon'?'#88cf9f':'#b8afa8';
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}"><defs><linearGradient id="bg${book.id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="${c1}"/><stop offset="100%" stop-color="${c2}"/></linearGradient><filter id="glow${book.id}"><feGaussianBlur stdDeviation="2" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect width="${w}" height="${h}" fill="url(#bg${book.id})" rx="4"/><rect x="1" y="1" width="${w-2}" height="${h-2}" fill="none" stroke="#c8a96b" stroke-width="0.5" opacity="0.3" rx="4"/><rect x="8" y="8" width="${w-16}" height="${h-16}" fill="none" stroke="#c8a96b" stroke-width="0.5" opacity="0.15" rx="2"/><text x="${w/2}" y="${h*0.28}" font-family="serif" font-size="${Math.min(w*0.35,48)}" fill="${rareColor}" text-anchor="middle" opacity="0.15" filter="url(#glow${book.id})">${initials}</text>${titleLines.map((l,i)=>`<text x="${w/2}" y="${h*0.52+i*18}" font-family="serif" font-size="10" fill="#F4EFEA" text-anchor="middle" opacity="0.95">${l}</text>`).join('')}<line x1="${w*0.3}" y1="${h*0.62}" x2="${w*0.7}" y2="${h*0.62}" stroke="#c8a96b" stroke-width="0.5" opacity="0.4"/><text x="${w/2}" y="${h*0.68}" font-family="serif" font-size="7.5" fill="#b8afa8" text-anchor="middle">${book.author}</text><text x="${w/2}" y="${h*0.88}" font-family="serif" font-size="6.5" fill="${rareColor}" text-anchor="middle" opacity="0.7">${book.rarity}</text><text x="${w/2}" y="${h*0.93}" font-family="serif" font-size="6" fill="#b8afa8" text-anchor="middle" opacity="0.5">${book.year>0?book.year:''+Math.abs(book.year)+' BC'}</text></svg>`;
+}
+function svgDataUrl(book,w,h){return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(genCover(book,w,h));}
+// ── CURRENCY ──────────────────────────────────────────────
+const RATE=83;
+function fmt(usdPrice){if(state.currency==='USD')return '$'+usdPrice.toFixed(2);return '₹'+(usdPrice*RATE).toFixed(0);}
+// ── TOAST ──────────────────────────────────────────────────
+function showToast(msg,type='info'){
+  const c=document.getElementById('toast-container');
+  const t=document.createElement('div');
+  t.className='toast '+(type==='success'?'success':type==='danger'?'danger':'');
+  t.textContent=msg;c.appendChild(t);
+  setTimeout(()=>{t.style.animation='fadeOut .3s ease forwards';setTimeout(()=>t.remove(),300);},3200);
+}
+// ── TAB SWITCHING ──────────────────────────────────────────
+function switchTab(name){
+  playNavSwitch();
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  const screen=document.getElementById('screen-'+name);
+  if(screen)screen.classList.add('active');
+  const tabIdx={landing:0,shelves:1,detail:2,cart:3,tracker:4,auth:5,streak:6,notebook:7,currency:8,gem:9,snake:10,community:11};
+  const tabs=document.querySelectorAll('.nav-tab');
+  const idx=tabIdx[name];
+  if(idx!==undefined&&tabs[idx])tabs[idx].classList.add('active');
+  if(name==='cart')renderCart();
+  if(name==='auth')renderAuth();
+  if(name==='streak')renderStreak();
+  if(name==='notebook')renderNotebook();
+  if(name==='currency')renderCurrencyScreen();
+  if(name==='gem')initGem();
+  if(name==='snake')initSnake();
+  if(name==='community')renderCommunity();
+  if(name==='tracker')renderTracker();
+  window.scrollTo(0,0);
+}
+// ── HERO PARTICLES ─────────────────────────────────────────
+function initParticles(){
+  const canvas=document.getElementById('particle-canvas');if(!canvas)return;
+  const ctx=canvas.getContext('2d');const W=canvas.width,H=canvas.height;
+  const particles=Array.from({length:80},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.2,size:Math.random()*2+.5,alpha:Math.random()*.6+.2}));
+  function draw(){ctx.clearRect(0,0,W,H);particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fillStyle=`rgba(200,169,107,${p.alpha})`;ctx.fill();});requestAnimationFrame(draw);}
+  draw();
+}
+// ── CAROUSEL ──────────────────────────────────────────────
+function buildCarousel(){
+  const track=document.getElementById('carousel-track');if(!track)return;
+  const featured=BOOKS.filter(b=>b.rarity==='Legendary').slice(0,12);
+  track.innerHTML=featured.map(b=>`<div class="book-card" onclick="window.openBook(${b.id})"><img src="${svgDataUrl(b,200,280)}" class="book-cover" alt="${b.title}"><div class="book-info"><div class="book-rarity rarity-${b.rarity.toLowerCase()}">${b.rarity}</div><div class="book-title">${b.title}</div><div class="book-author">${b.author}</div><div class="book-price">${fmt(b.prices.physical)}</div></div></div>`).join('');
+}
+function moveCarousel(dir){
+  const track=document.getElementById('carousel-track');if(!track)return;
+  const cardW=220;state.carouselIdx=Math.max(0,state.carouselIdx+dir);
+  const maxIdx=Math.max(0,track.children.length-4);state.carouselIdx=Math.min(state.carouselIdx,maxIdx);
+  track.style.transform=`translateX(-${state.carouselIdx*cardW}px)`;
+}
+// ── HERO SEARCH ────────────────────────────────────────────
+function heroSearch(q){
+  const res=document.getElementById('hero-search-results');
+  if(!q||q.length<2){res.classList.remove('open');return;}
+  const matches=BOOKS.filter(b=>b.title.toLowerCase().includes(q.toLowerCase())||b.author.toLowerCase().includes(q.toLowerCase())).slice(0,6);
+  if(!matches.length){res.classList.remove('open');return;}
+  res.innerHTML=matches.map(b=>`<div class="search-item" onclick="window.openBook(${b.id})"><img src="${svgDataUrl(b,36,48)}" class="search-item-thumb" alt="${b.title}"><div class="search-item-info"><h4>${b.title}</h4><p>${b.author} · ${b.genre}</p></div><span style="font-family:var(--font-sub);font-size:.8rem;color:var(--gold)">${fmt(b.prices.physical)}</span></div>`).join('');
+  res.classList.add('open');
+}
+function filterByEmotion(e){
+  switchTab('shelves');
+  setTimeout(()=>{document.querySelectorAll('[data-emotion]').forEach(el=>{el.checked=el.dataset.emotion===e;});applyFilters();},100);
+}
+// ── CATALOG ────────────────────────────────────────────────
+function buildGenreFilters(){
+  const el=document.getElementById('genre-filters');if(!el)return;
+  el.innerHTML=GENRES.map(g=>`<label class="filter-option"><input type="checkbox" onchange="window.applyFilters()" data-genre="${g}"> ${g}</label>`).join('');
+}
+function buildEmotionFilters(){
+  const el=document.getElementById('emotion-filters');if(!el)return;
+  el.innerHTML=EMOTIONS.map(e=>`<label class="filter-option"><input type="checkbox" onchange="window.applyFilters()" data-emotion="${e}"> ${e}</label>`).join('');
+}
+function applyFilters(){
+  const q=(document.getElementById('catalog-search')||{}).value||'';
+  const genres=[...document.querySelectorAll('[data-genre]:checked')].map(e=>e.dataset.genre);
+  const emotions=[...document.querySelectorAll('[data-emotion]:checked')].map(e=>e.dataset.emotion);
+  const traits=[...document.querySelectorAll('[data-trait]:checked')].map(e=>e.dataset.trait);
+  const rarities=[...document.querySelectorAll('[data-rarity]:checked')].map(e=>e.dataset.rarity);
+  let books=BOOKS;
+  if(q)books=books.filter(b=>b.title.toLowerCase().includes(q.toLowerCase())||b.author.toLowerCase().includes(q.toLowerCase())||b.genre.toLowerCase().includes(q.toLowerCase()));
+  if(genres.length)books=books.filter(b=>genres.includes(b.genre));
+  if(emotions.length)books=books.filter(b=>emotions.includes(b.emotionalPrescription));
+  if(traits.length)books=books.filter(b=>traits.some(t=>b.traits.includes(t)));
+  if(rarities.length)books=books.filter(b=>rarities.includes(b.rarity));
+  const grid=document.getElementById('catalog-grid');const count=document.getElementById('catalog-count');if(!grid)return;
+  count.textContent=`Showing ${books.length} volume${books.length!==1?'s':''}`;
+  grid.innerHTML=books.map(b=>`<div class="book-card" onclick="window.openBook(${b.id})"><img src="${svgDataUrl(b,200,280)}" class="book-cover" alt="${b.title}" loading="lazy"><div class="book-info"><div class="book-rarity rarity-${b.rarity.toLowerCase()}">${b.rarity}</div><div class="book-title">${b.title}</div><div class="book-author">${b.author}</div><div class="book-price">${fmt(b.prices.physical)}</div></div></div>`).join('');
+}
+function clearFilters(){
+  document.querySelectorAll('[data-genre],[data-emotion],[data-trait],[data-rarity]').forEach(e=>e.checked=false);
+  const si=document.getElementById('catalog-search');if(si)si.value='';applyFilters();
+}
+function buildCatalog(){buildGenreFilters();buildEmotionFilters();applyFilters();}
+// ── BOOK DETAIL ────────────────────────────────────────────
+function openBook(id){
+  const book=BOOKS.find(b=>b.id===id);if(!book)return;
+  state.selectedBook=book;state.selectedFormat='physical';playChime();
+  const container=document.getElementById('detail-content');
+  const fmtPrice=(fmt_key)=>fmt(book.prices[fmt_key]);
+  const related=book.related.map(rid=>BOOKS.find(b=>b.id===rid)).filter(Boolean);
+  container.innerHTML=`<div class="detail-layout"><div class="detail-cover-wrap"><img src="${svgDataUrl(book,360,500)}" class="detail-cover" alt="${book.title}"><div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">${book.traits.map(t=>`<span class="tag">${t}</span>`).join('')}</div><div style="margin-top:16px;font-family:var(--font-sub);font-size:.72rem;color:var(--text3);letter-spacing:.1em"><div style="margin-bottom:6px">📄 ${book.pages} pages</div><div style="margin-bottom:6px">📅 ${book.year>0?book.year:Math.abs(book.year)+' BC'}</div><div>📚 ${book.genre}</div></div></div><div class="detail-info"><div class="book-rarity rarity-${book.rarity.toLowerCase()} mb-16">${book.rarity}</div><h1>${book.title}</h1><div class="detail-author">by ${book.author}</div><div class="detail-tags"><span class="tag gold">📖 ${book.emotionalPrescription}</span><span class="tag">${book.genre}</span></div><p class="detail-lore">${book.lore}</p><div class="format-tabs" id="detail-format-tabs"><div class="format-tab active" onclick="window.selectFormat('digital',this)">📱 Digital Scroll<br><small style="color:var(--text3)">${fmtPrice('digital')}</small></div><div class="format-tab" onclick="window.selectFormat('audio',this)">🎧 Acoustic Codex<br><small style="color:var(--text3)">${fmtPrice('audio')}</small></div><div class="format-tab" onclick="window.selectFormat('physical',this)">📖 Physical Relic<br><small style="color:var(--text3)">${fmtPrice('physical')}</small></div></div><div class="price-display" id="detail-price">${fmt(book.prices.physical)}</div><div class="stock-info" id="detail-stock">⚡ ${book.stock.physical} copies available</div><div class="detail-actions"><button class="btn-primary" onclick="window.addToCart(${book.id})">✦ Add to Ledger</button><button class="btn-ghost" onclick="window.wishlistBook(${book.id})">♡ Wishlist</button></div><div class="reviews-section"><div style="font-family:var(--font-sub);font-size:.78rem;letter-spacing:.15em;color:var(--gold3);text-transform:uppercase;margin-bottom:16px">Scholar Reviews</div>${book.reviews.map(r=>`<div class="review-card"><div class="review-stars">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</div><p class="review-text">"${r.text}"</p><div class="review-author">— ${r.author}</div></div>`).join('')}</div><div style="margin-top:40px"><div style="font-family:var(--font-sub);font-size:.78rem;letter-spacing:.15em;color:var(--gold3);text-transform:uppercase;margin-bottom:20px">Related Tomes</div><div style="display:flex;gap:16px;flex-wrap:wrap">${related.map(r=>`<div class="book-card" style="width:160px" onclick="window.openBook(${r.id})"><img src="${svgDataUrl(r,160,220)}" style="width:100%;height:220px" alt="${r.title}"><div class="book-info"><div class="book-title">${r.title}</div><div class="book-price">${fmt(r.prices.physical)}</div></div></div>`).join('')}</div></div></div></div>`;
+  switchTab('detail');
+}
+function selectFormat(f,el){
+  state.selectedFormat=f;
+  document.querySelectorAll('#detail-format-tabs .format-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const book=state.selectedBook;if(!book)return;
+  document.getElementById('detail-price').textContent=fmt(book.prices[f]);
+  document.getElementById('detail-stock').textContent=`⚡ ${book.stock[f]} copies available`;
+}
+// ── CART ──────────────────────────────────────────────────
+let couponApplied='';
+function addToCart(id){
+  const book=BOOKS.find(b=>b.id===id);if(!book)return;
+  const fmt_key=state.selectedFormat||'physical';
+  const existing=state.cart.find(i=>i.id===id&&i.format===fmt_key);
+  if(existing){existing.qty++;}else{state.cart.push({id,format:fmt_key,qty:1});}
+  playCart();updateCartBadge();showToast(`"${book.title}" added to your ledger`,'success');
+}
+function updateCartBadge(){
+  const el=document.getElementById('cart-count');
+  const total=state.cart.reduce((s,i)=>s+i.qty,0);
+  if(el)el.textContent=total;
+}
+function removeFromCart(id,fmt_key){state.cart=state.cart.filter(i=>!(i.id===id&&i.format===fmt_key));updateCartBadge();renderCart();}
+function changeQty(id,fmt_key,delta){const item=state.cart.find(i=>i.id===id&&i.format===fmt_key);if(!item)return;item.qty=Math.max(1,item.qty+delta);renderCart();}
+function calcTotals(){
+  const sub=state.cart.reduce((s,i)=>{const b=BOOKS.find(bk=>bk.id===i.id);return s+(b?b.prices[i.format]:0)*i.qty;},0);
+  let disc=0;if(couponApplied==='ARCANUM10')disc=sub*0.10;else if(couponApplied==='SCRIBE5')disc=sub*0.05;
+  const tax=(sub-disc)*0.18;return{sub,disc,tax,total:sub-disc+tax};
+}
+function renderCart(){
+  const empty=document.getElementById('cart-empty');const table=document.getElementById('cart-table');
+  const sidebar=document.getElementById('cart-sidebar');const tbody=document.getElementById('cart-body');
+  if(!empty||!table||!sidebar||!tbody)return;
+  if(state.cart.length===0){empty.style.display='block';table.style.display='none';sidebar.style.display='none';return;}
+  empty.style.display='none';table.style.display='table';sidebar.style.display='block';
+  tbody.innerHTML=state.cart.map(item=>{
+    const b=BOOKS.find(bk=>bk.id===item.id);if(!b)return'';
+    const fmtLabel={digital:'Digital Scroll',audio:'Acoustic Codex',physical:'Physical Relic'}[item.format];
+    return `<tr><td><div style="display:flex;align-items:center;gap:12px"><img src="${svgDataUrl(b,48,64)}" class="cart-book-thumb" alt="${b.title}"><div><div class="cart-book-name">${b.title}</div><div class="cart-book-format">${b.author}</div></div></div></td><td><span class="tag" style="font-size:.72rem">${fmtLabel}</span></td><td>${fmt(b.prices[item.format])}</td><td><div class="qty-ctrl"><button class="qty-btn" onclick="window.changeQty(${item.id},'${item.format}',-1)">-</button><span class="qty-val">${item.qty}</span><button class="qty-btn" onclick="window.changeQty(${item.id},'${item.format}',1)">+</button></div></td><td>${fmt(b.prices[item.format]*item.qty)}</td><td><button class="remove-btn" onclick="window.removeFromCart(${item.id},'${item.format}')">✕</button></td></tr>`;
+  }).join('');
+  const {sub,disc,tax,total}=calcTotals();
+  document.getElementById('order-summary').innerHTML=`<div class="order-row"><span>Subtotal</span><span>${fmt(sub)}</span></div>${disc>0?`<div class="order-row" style="color:var(--success)"><span>Coupon (${couponApplied})</span><span>-${fmt(disc)}</span></div>`:''}<div class="order-row"><span>GST (18%)</span><span>${fmt(tax)}</span></div><div class="order-row"><span>Total</span><span>${fmt(total)}</span></div>`;
+}
+function applyCoupon(){
+  const input=document.getElementById('coupon-input');const code=(input.value||'').toUpperCase().trim();
+  if(code==='ARCANUM10'){couponApplied='ARCANUM10';showToast('Coupon ARCANUM10 applied — 10% off!','success');playBell();}
+  else if(code==='SCRIBE5'){couponApplied='SCRIBE5';showToast('Coupon SCRIBE5 applied — 5% off!','success');playBell();}
+  else{showToast('Invalid coupon code','danger');}renderCart();
+}
+function setPayTab(el,method){document.querySelectorAll('.pay-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');}
+function checkout(){
+  if(state.cart.length===0){showToast('Your cart is empty','danger');return;}
+  if(!state.user){showToast('Please sign in to complete your order','danger');switchTab('auth');return;}
+  const {total}=calcTotals();const orderId='ORD'+Date.now();
+  const order={id:orderId,items:[...state.cart],total,timestamp:Date.now(),stage:0};
+  state.orders.push(order);
+  const txn={id:orderId,amount:total,date:new Date().toLocaleDateString(),items:state.cart.length};
+  state.transactions.push(txn);localStorage.setItem('maesterTxns',JSON.stringify(state.transactions));
+  state.cart=[];couponApplied='';updateCartBadge();playVictory();
+  showToast('✦ Order sealed & dispatched! Check Owl Post for tracking.','success');
+  setTimeout(()=>switchTab('tracker'),1200);
+}
+// ── TRACKER — shows delivery address (NEW: address box added) ──
+function renderTracker(){
+  const el=document.getElementById('tracker-content');if(!el)return;
+  if(state.orders.length===0){
+    el.innerHTML=`<div class="empty-tracker"><div style="font-size:3rem;margin-bottom:16px">🦉</div><h3>No dispatches yet</h3><p>Complete a purchase to see your owl's flight path</p><button class="btn-ghost mt-16" onclick="window.switchTab('cart')">Visit Cart</button></div>`;
+    return;
+  }
+  const stages=[
+    {label:'Order Received',desc:'Your manuscript has been accepted into the archive.',icon:'📜'},
+    {label:'Manuscript Prepared',desc:'Our scribes are packaging your tomes with care.',icon:'📦'},
+    {label:'Owl In Transit',desc:'A trained owl bears your parcel through the night skies.',icon:'🦉'},
+    {label:'Delivered',desc:'Your volumes have arrived at the sanctum gate.',icon:'✦'},
+  ];
+  // find default address for delivery display
+  const defaultAddr=state.addresses.find(a=>a.isDefault)||state.addresses[0]||null;
+  const addrBoxHtml=defaultAddr
+    ? `<div class="delivery-addr-box"><div class="delivery-addr-icon">📍</div><div><div class="delivery-addr-label">Delivering to</div><div class="delivery-addr-text"><strong style="font-family:var(--font-sub);font-size:.8rem;color:var(--text)">${defaultAddr.label}</strong><br>${defaultAddr.detail}</div></div><button onclick="window.switchTab('auth')" style="margin-left:auto;font-family:var(--font-sub);font-size:.68rem;color:var(--gold3);background:none;border:1px solid var(--border2);padding:4px 10px;border-radius:4px;cursor:pointer;white-space:nowrap;align-self:flex-start">Change</button></div>`
+    : `<div class="delivery-addr-box" style="cursor:pointer" onclick="window.switchTab('auth')"><div class="delivery-addr-icon">📍</div><div><div class="delivery-addr-label">No delivery address saved</div><div class="delivery-addr-text">Add an address in Scribe Access to see it here.</div></div></div>`;
+  el.innerHTML=state.orders.map(order=>{
+    const now=Date.now();const elapsed=now-order.timestamp;
+    const activeStage=Math.min(3,Math.floor(elapsed/(1000*60*3)));
+    return `<div class="tracking-card">${addrBoxHtml}<div class="tracking-id">Order #${order.id} · ${fmt(order.total)} · ${order.items.length} item(s)</div><div class="timeline">${stages.map((s,i)=>`<div class="tl-item"><div class="tl-dot ${i<activeStage?'done':i===activeStage?'active':''}"></div><div class="tl-label">${s.icon} ${s.label}</div><div class="tl-time">${i<=activeStage?new Date(order.timestamp+i*180000).toLocaleTimeString():'-'}</div><div class="tl-desc">${i<=activeStage?s.desc:''}</div></div>`).join('')}</div><div class="owl-map"><div style="font-family:var(--font-sub);font-size:.72rem;color:var(--text3);letter-spacing:.1em;margin-bottom:8px">FLIGHT PATH MONITOR</div><div style="position:relative;height:140px;background:rgba(0,0,0,.3);border-radius:8px;overflow:hidden"><div style="position:absolute;bottom:20px;left:10%;font-size:.7rem;color:var(--text3)">Origin Vault</div><div style="position:absolute;bottom:20px;right:10%;font-size:.7rem;color:var(--text3)">Destination</div><svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 400 140"><path d="M40,100 Q200,20 360,100" fill="none" stroke="rgba(200,169,107,0.3)" stroke-width="1.5" stroke-dasharray="6,4"/><circle cx="40" cy="100" r="6" fill="rgba(200,169,107,0.5)"/><circle cx="360" cy="100" r="6" fill="rgba(77,143,100,0.5)"/></svg><div class="owl-anim" style="animation:owlFly ${6-activeStage}s linear ${activeStage<3?'infinite':'forwards'}">🦉</div></div></div></div>`;
+  }).join('');
+}
+// ── ADDRESS FUNCTIONS (NEW) ────────────────────────────────
+function _persistAddresses(){localStorage.setItem('maesterAddresses',JSON.stringify(state.addresses));}
+function toggleAddressForm(){
+  state.showAddressForm=!state.showAddressForm;
+  playNote(523,'sine',.1,.07);
+  renderAuth();
+}
+function saveAddress(){
+  const labelEl=document.getElementById('new-addr-label');
+  const detailEl=document.getElementById('new-addr-detail');
+  const defaultEl=document.getElementById('new-addr-default');
+  const label=(labelEl?labelEl.value:'').trim();
+  const detail=(detailEl?detailEl.value:'').trim();
+  const isDefault=!!(defaultEl&&defaultEl.checked);
+  if(!label||!detail){showToast('Please fill in label and address','danger');return;}
+  if(isDefault||!state.addresses.length)state.addresses.forEach(a=>a.isDefault=false);
+  state.addresses.push({id:'addr'+Date.now(),label,detail,isDefault:isDefault||state.addresses.length===0});
+  state.showAddressForm=false;
+  _persistAddresses();playChime();showToast('Address saved','success');renderAuth();
+}
+function setDefaultAddress(id){
+  state.addresses.forEach(a=>a.isDefault=a.id===id);
+  _persistAddresses();playNote(660,'sine',.15,.08);showToast('Default address updated','info');renderAuth();
+}
+function deleteAddress(id){
+  const wasDefault=(state.addresses.find(a=>a.id===id)||{}).isDefault;
+  state.addresses=state.addresses.filter(a=>a.id!==id);
+  if(wasDefault&&state.addresses.length)state.addresses[0].isDefault=true;
+  _persistAddresses();playNote(300,'sine',.2,.1);showToast('Address removed','info');renderAuth();
+}
+// ── AUTH ─── (modified: address section added to logged-in view) ──
+function renderAuth(){
+  const el=document.getElementById('auth-main');if(!el)return;
+  if(state.user){
+    const initials=state.user.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    // build address cards
+    const addrCards=state.addresses.length
+      ? state.addresses.map(a=>`<div class="addr-card${a.isDefault?' addr-default':''}"><div class="addr-label">${a.label}${a.isDefault?'<span class="addr-default-badge">DEFAULT</span>':''}</div><div class="addr-detail">${a.detail}</div><div class="addr-actions">${!a.isDefault?`<button class="addr-set-default-btn" onclick="window.setDefaultAddress('${a.id}')">Set as Default</button>`:'<span style="font-size:.68rem;color:var(--gold3);font-family:var(--font-sub)">✓ Default</span>'}<button class="addr-remove-btn" onclick="window.deleteAddress('${a.id}')">Remove</button></div></div>`).join('')
+      : `<p style="font-size:.85rem;color:var(--text3);font-family:var(--font-alt);font-style:italic;padding:6px 0">No addresses saved yet.</p>`;
+    const addrFormHtml=state.showAddressForm?`<div class="addr-form-box"><div class="addr-form-heading">New Delivery Address</div><div class="addr-form-row"><label class="addr-form-label">Label (e.g. Home, Office)</label><input type="text" id="new-addr-label" class="form-input" placeholder="Home Sanctum"></div><div class="addr-form-row"><label class="addr-form-label">Full Address</label><textarea id="new-addr-detail" class="form-input" rows="3" placeholder="Street, City, State, PIN, Country"></textarea></div><label class="addr-checkbox-row"><input type="checkbox" id="new-addr-default"><span class="addr-checkbox-label">Set as default delivery address</span></label><div class="addr-form-btns"><button class="btn-primary" style="font-size:.78rem;padding:10px 22px" onclick="window.saveAddress()">✦ Save Address</button><button class="btn-ghost" style="font-size:.78rem;padding:9px 16px" onclick="window.toggleAddressForm()">Cancel</button></div></div>`:'';
+    el.innerHTML=`<div style="max-width:700px;margin:0 auto;padding:0 24px 40px"><div class="profile-block"><div class="profile-avatar">${initials}</div><div><div class="profile-name">${state.user.name}</div><div class="profile-since">${state.user.email}</div><div class="profile-since" style="margin-top:3px">Scribe since ${state.user.since}</div></div><button class="btn-ghost" style="margin-left:auto;font-size:.78rem;padding:8px 16px" onclick="window.logout()">Sign Out</button></div><div class="section-box"><div class="addr-section-title">📍 Delivery Addresses</div>${addrCards}<button class="addr-add-btn" onclick="window.toggleAddressForm()">${state.showAddressForm?'− Hide Form':'+ Add New Address'}</button>${addrFormHtml}</div><div class="section-box"><div style="font-family:var(--font-sub);font-size:.78rem;letter-spacing:.12em;color:var(--gold3);text-transform:uppercase;margin-bottom:16px">Transaction History</div>${state.transactions.length===0?'<div style="color:var(--text3);font-size:.9rem">No transactions yet</div>':state.transactions.map(t=>`<div class="txn-card"><div class="txn-info"><h4>Order #${t.id}</h4><p>${t.date} · ${t.items} item(s)</p></div><div class="txn-amount">${fmt(t.amount)}</div></div>`).join('')}</div></div>`;
+    return;
+  }
+  el.innerHTML=`<div class="auth-layout"><div class="auth-card"><div class="auth-tabs"><div class="auth-tab active" id="tab-login" onclick="window.authToggle('login')">Sign In</div><div class="auth-tab" id="tab-register" onclick="window.authToggle('register')">Register</div></div><div id="auth-form-content"><div class="form-group"><label class="form-label">Email</label><input type="email" id="auth-email" class="form-input" placeholder="scholar@maesterify.com"></div><div class="form-group"><label class="form-label">Password</label><input type="password" id="auth-pass" class="form-input" placeholder="Your secret passphrase"></div><button class="btn-primary w-full" style="padding:14px;text-align:center;margin-top:8px" onclick="window.doAuth('login')">✦ Enter Sanctum</button></div></div></div>`;
+}
+let authMode='login';
+function authToggle(mode){
+  authMode=mode;
+  document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+mode).classList.add('active');
+  const fc=document.getElementById('auth-form-content');
+  if(mode==='register'){fc.innerHTML=`<div class="form-group"><label class="form-label">Full Name</label><input type="text" id="auth-name" class="form-input" placeholder="Your scholarly name"></div><div class="form-group"><label class="form-label">Email</label><input type="email" id="auth-email" class="form-input" placeholder="scholar@maesterify.com"></div><div class="form-group"><label class="form-label">Password</label><input type="password" id="auth-pass" class="form-input" placeholder="Create a passphrase"></div><button class="btn-primary w-full" style="padding:14px;text-align:center;margin-top:8px" onclick="window.doAuth('register')">✦ Inscribe in Ledger</button>`;}
+  else{fc.innerHTML=`<div class="form-group"><label class="form-label">Email</label><input type="email" id="auth-email" class="form-input" placeholder="scholar@maesterify.com"></div><div class="form-group"><label class="form-label">Password</label><input type="password" id="auth-pass" class="form-input" placeholder="Your secret passphrase"></div><button class="btn-primary w-full" style="padding:14px;text-align:center;margin-top:8px" onclick="window.doAuth('login')">✦ Enter Sanctum</button>`;}
+}
+function doAuth(mode){
+  const email=(document.getElementById('auth-email')||{}).value||'';
+  const pass=(document.getElementById('auth-pass')||{}).value||'';
+  const name=(document.getElementById('auth-name')||{}).value||'Scholar';
+  if(!email||!pass){showToast('Please fill all fields','danger');return;}
+  state.user={name:mode==='register'?name:email.split('@')[0],email,since:new Date().toLocaleDateString()};
+  state.showAddressForm=false;
+  playBell();showToast(`Welcome, ${state.user.name}!`,'success');renderAuth();
+}
+function logout(){state.user=null;state.showAddressForm=false;showToast('You have left the sanctum');renderAuth();}
+// ── STREAK ────────────────────────────────────────────────
+const RANKS=[{name:'Novice Initiate',minXP:0},{name:'Lore Keeper',minXP:500},{name:'Archive Adept',minXP:2000},{name:'Grand Curator',minXP:5000},{name:'Grand Master',minXP:10000}];
+const ACHIEVEMENTS=[{icon:'📚',name:'First Chapter',desc:'Log your first reading session',xp:100,cond:s=>s.count>=1},{icon:'🔥',name:'Flame Keeper',desc:'Reach a 7-day streak',xp:500,cond:s=>s.count>=7},{icon:'⭐',name:'Star Scholar',desc:'Earn 1000 XP',xp:0,cond:s=>s.xp>=1000},{icon:'📖',name:'Devoted Reader',desc:'Reach a 30-day streak',xp:2000,cond:s=>s.count>=30},{icon:'🏛️',name:'Archive Master',desc:'Reach Archive Adept rank',xp:0,cond:s=>s.xp>=2000},{icon:'👑',name:'Grand Curator',desc:'Earn 5000 XP',xp:0,cond:s=>s.xp>=5000}];
+function incrementStreak(){
+  const today=new Date().toDateString();
+  if(state.streak.lastDate===today){showToast('Already logged today\'s reading!');return;}
+  state.streak.count++;state.streak.xp+=50+Math.min(state.streak.count*5,200);state.streak.lastDate=today;
+  localStorage.setItem('streak',state.streak.count);localStorage.setItem('xp',state.streak.xp);localStorage.setItem('streakDate',today);
+  playBell();showToast(`+${50+Math.min(state.streak.count*5,200)} XP earned! Streak: ${state.streak.count} days`,'success');renderStreak();
+}
+function getRank(){for(let i=RANKS.length-1;i>=0;i--){if(state.streak.xp>=RANKS[i].minXP)return RANKS[i];}return RANKS[0];}
+function renderStreak(){
+  const sc=document.getElementById('streak-count');const xv=document.getElementById('xp-val');const xn=document.getElementById('xp-next');
+  const xf=document.getElementById('xp-fill');const rb=document.getElementById('rank-badge');const ag=document.getElementById('achievement-grid');
+  if(!sc)return;sc.textContent=state.streak.count;xv.textContent=state.streak.xp;
+  const rank=getRank();const nextRank=RANKS[RANKS.indexOf(rank)+1];
+  if(nextRank){xn.textContent=nextRank.minXP;xf.style.width=((state.streak.xp-rank.minXP)/(nextRank.minXP-rank.minXP)*100)+'%';}else{xn.textContent='MAX';xf.style.width='100%';}
+  rb.textContent=rank.name;
+  ag.innerHTML=ACHIEVEMENTS.map(a=>`<div class="achievement ${a.cond(state.streak)?'unlocked':''}"><div class="achievement-icon">${a.icon}</div><div class="achievement-name">${a.name}</div><div class="achievement-desc">${a.desc}</div>${a.cond(state.streak)?'<div style="font-size:.7rem;color:var(--gold);margin-top:4px">✦ Unlocked</div>':''}</div>`).join('');
+}
+// ── NOTEBOOK ──────────────────────────────────────────────
+function saveNote(){
+  const title=(document.getElementById('note-title')||{}).value||'';
+  const body=(document.getElementById('note-body')||{}).value||'';
+  const bookLink=(document.getElementById('note-book-link')||{}).value||'';
+  if(!body.trim()){showToast('Write something first','danger');return;}
+  state.notes.unshift({id:Date.now(),title:title||'Untitled Note',body,bookLink,date:new Date().toLocaleDateString()});
+  localStorage.setItem('maesterNotes',JSON.stringify(state.notes));
+  playBell();showToast('Note inscribed','success');
+  document.getElementById('note-title').value='';document.getElementById('note-body').value='';renderNotebook();
+}
+function addReadingHours(){
+  const h=parseFloat((document.getElementById('hours-input')||{}).value||0);
+  if(!h||h<=0){showToast('Enter valid hours','danger');return;}
+  state.readingHours+=h;localStorage.setItem('readingHours',state.readingHours);
+  showToast(`${h} hours added to your reading log`,'success');renderNotebook();
+}
+function renderNotebook(){
+  const rh=document.getElementById('reading-hours');const sh=document.getElementById('stat-hours');
+  const sn=document.getElementById('stat-notes');const sb=document.getElementById('stat-books');
+  const nl=document.getElementById('notes-list');const nbl=document.getElementById('note-book-link');
+  if(rh)rh.textContent=state.readingHours.toFixed(1);if(sh)sh.textContent=state.readingHours.toFixed(1);
+  if(sn)sn.textContent=state.notes.length;if(sb)sb.textContent=new Set(state.notes.filter(n=>n.bookLink).map(n=>n.bookLink)).size;
+  if(nl)nl.innerHTML=state.notes.map(n=>`<div class="note-card"><h4>${n.title}</h4><p>${n.body}</p><time>${n.date}</time></div>`).join('');
+  if(nbl)nbl.innerHTML=`<option value="">Link to a book...</option>`+BOOKS.slice(0,30).map(b=>`<option value="${b.id}">${b.title}</option>`).join('');
+}
+// ── CURRENCY ──────────────────────────────────────────────
+function toggleCurrency(){
+  state.currency=state.currency==='USD'?'INR':'USD';
+  const btn=document.getElementById('currency-btn');const disp=document.getElementById('currency-display');
+  if(btn)btn.textContent=state.currency==='USD'?'Switch to INR ₹':'Switch to USD $';
+  if(disp)disp.textContent=state.currency==='USD'?'$ USD':'₹ INR';
+  playBell();showToast(`Currency switched to ${state.currency}`,'success');
+  renderCurrencyScreen();buildCarousel();applyFilters();
+  if(state.selectedBook){const pd=document.getElementById('detail-price');if(pd)pd.textContent=fmt(state.selectedBook.prices[state.selectedFormat]);}
+  renderCart();
+}
+function renderCurrencyScreen(){
+  const pv=document.getElementById('currency-preview');if(!pv)return;
+  pv.innerHTML=BOOKS.slice(0,8).map(b=>`<div class="order-row"><span>${b.title.slice(0,30)}</span><span>${fmt(b.prices.physical)}</span></div>`).join('');
+  const disp=document.getElementById('currency-display');const btn=document.getElementById('currency-btn');
+  if(disp)disp.textContent=state.currency==='USD'?'$ USD':'₹ INR';
+  if(btn)btn.textContent=state.currency==='USD'?'Switch to INR ₹':'Switch to USD $';
+}
+// ── WISHLIST ──────────────────────────────────────────────
+function wishlistBook(id){playBell();const b=BOOKS.find(bk=>bk.id===id);showToast(b?`"${b.title}" added to Wishlist`:'Added to Wishlist');}
+// ── GEM GAME ──────────────────────────────────────────────
+const GEM_TYPES=7;const GRID_SIZE=8;const CELL=540/8;
+const GEM_COLORS=['#c8a96b','#5488b8','#b85454','#4d8f64','#8b5488','#8b8b1a','#5488a8'];
+const GEM_SYMBOLS=['◆','●','▲','■','★','⬟','⬡'];
+let gemState={grid:[],selected:null,score:0,level:1,target:500,moves:30,animating:false,particles:[],gameOver:false,canvas:null,ctx:null,raf:null};
+function initGem(){
+  const canvas=document.getElementById('gem-canvas');if(!canvas)return;
+  gemState.canvas=canvas;gemState.ctx=canvas.getContext('2d');
+  gemState.score=0;gemState.level=1;gemState.target=500;gemState.moves=30;
+  gemState.particles=[];gemState.gameOver=false;gemState.selected=null;
+  document.getElementById('gem-overlay').style.display='none';
+  canvas.width=540;canvas.height=540;canvas.style.width='100%';canvas.style.maxWidth='540px';canvas.style.height='540px';
+  gemState.grid=Array.from({length:GRID_SIZE},()=>Array.from({length:GRID_SIZE},()=>Math.floor(Math.random()*GEM_TYPES)));
+  canvas.onclick=gemClick;updateGemHUD();if(gemState.raf)cancelAnimationFrame(gemState.raf);gemLoop();
+}
+function gemClick(e){
+  if(gemState.animating||gemState.gameOver)return;
+  const rect=gemState.canvas.getBoundingClientRect();
+  const scaleX=gemState.canvas.width/rect.width;const scaleY=gemState.canvas.height/rect.height;
+  const cx=Math.floor((e.clientX-rect.left)*scaleX/CELL);const cy=Math.floor((e.clientY-rect.top)*scaleY/CELL);
+  if(cx<0||cx>=GRID_SIZE||cy<0||cy>=GRID_SIZE)return;
+  if(!gemState.selected){gemState.selected={x:cx,y:cy};}
+  else{
+    const sx=gemState.selected.x,sy=gemState.selected.y;
+    if(Math.abs(sx-cx)+Math.abs(sy-cy)===1){
+      const tmp=gemState.grid[sy][sx];gemState.grid[sy][sx]=gemState.grid[cy][cx];gemState.grid[cy][cx]=tmp;
+      gemState.moves--;updateGemHUD();
+      const matches=findMatches();
+      if(matches.length>0){processMatches(matches);}
+      else{const tmp2=gemState.grid[sy][sx];gemState.grid[sy][sx]=gemState.grid[cy][cx];gemState.grid[cy][cx]=tmp2;gemState.moves++;updateGemHUD();}
+    }
+    gemState.selected=null;
+  }
+}
+function findMatches(){
+  const matches=new Set();
+  for(let y=0;y<GRID_SIZE;y++)for(let x=0;x<=GRID_SIZE-3;x++)if(gemState.grid[y][x]===gemState.grid[y][x+1]&&gemState.grid[y][x]===gemState.grid[y][x+2]){matches.add(`${y},${x}`);matches.add(`${y},${x+1}`);matches.add(`${y},${x+2}`);if(x+3<GRID_SIZE&&gemState.grid[y][x]===gemState.grid[y][x+3])matches.add(`${y},${x+3}`);if(x+4<GRID_SIZE&&gemState.grid[y][x]===gemState.grid[y][x+4])matches.add(`${y},${x+4}`);}
+  for(let x=0;x<GRID_SIZE;x++)for(let y=0;y<=GRID_SIZE-3;y++)if(gemState.grid[y][x]===gemState.grid[y+1][x]&&gemState.grid[y][x]===gemState.grid[y+2][x]){matches.add(`${y},${x}`);matches.add(`${y+1},${x}`);matches.add(`${y+2},${x}`);if(y+3<GRID_SIZE&&gemState.grid[y][x]===gemState.grid[y+3][x])matches.add(`${y+3},${x}`);if(y+4<GRID_SIZE&&gemState.grid[y][x]===gemState.grid[y+4][x])matches.add(`${y+4},${x}`);}
+  return[...matches].map(k=>{const[y,x]=k.split(',').map(Number);return{x,y};});
+}
+function processMatches(matches){
+  gemState.animating=true;
+  matches.forEach(({x,y})=>{const px=x*CELL+CELL/2,py=y*CELL+CELL/2;for(let i=0;i<6;i++)gemState.particles.push({x:px,y:py,vx:(Math.random()-0.5)*8,vy:(Math.random()-0.5)*8,life:30,color:GEM_COLORS[gemState.grid[y][x]]});gemState.grid[y][x]=-1;});
+  gemState.score+=matches.length*10*gemState.level;playMatch();updateGemHUD();
+  setTimeout(()=>{
+    for(let x=0;x<GRID_SIZE;x++){let empty=[];for(let y=GRID_SIZE-1;y>=0;y--){if(gemState.grid[y][x]===-1)empty.push(y);else if(empty.length>0){const ey=empty.shift();gemState.grid[ey][x]=gemState.grid[y][x];gemState.grid[y][x]=-1;empty.push(y);}}for(let y=0;y<GRID_SIZE;y++)if(gemState.grid[y][x]===-1)gemState.grid[y][x]=Math.floor(Math.random()*GEM_TYPES);}
+    const newMatches=findMatches();if(newMatches.length>0){gemState.animating=false;processMatches(newMatches);}else{gemState.animating=false;checkGemState();}
+  },400);
+}
+function checkGemState(){
+  if(gemState.score>=gemState.target){gemState.level++;gemState.target=gemState.level*500;gemState.moves=30;playVictory();document.getElementById('gem-overlay-title').textContent='Level Up!';document.getElementById('gem-overlay-msg').textContent=`Level ${gemState.level} — Target: ${gemState.target}`;document.getElementById('gem-overlay').style.display='flex';setTimeout(()=>{document.getElementById('gem-overlay').style.display='none';},2000);}
+  else if(gemState.moves<=0){gemState.gameOver=true;playDefeat();document.getElementById('gem-overlay-title').textContent='No More Moves';document.getElementById('gem-overlay-msg').textContent=`Final Score: ${gemState.score}`;document.getElementById('gem-overlay').style.display='flex';}
+}
+function updateGemHUD(){document.getElementById('gem-score').textContent=gemState.score;document.getElementById('gem-level').textContent=gemState.level;document.getElementById('gem-target').textContent=gemState.target;document.getElementById('gem-moves').textContent=gemState.moves;}
+function restartGem(){document.getElementById('gem-overlay').style.display='none';initGem();}
+function gemLoop(){
+  const ctx=gemState.ctx;const canvas=gemState.canvas;if(!ctx||!canvas)return;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  for(let y=0;y<GRID_SIZE;y++)for(let x=0;x<GRID_SIZE;x++){const g=gemState.grid[y][x];if(g===-1)continue;const px=x*CELL+4,py=y*CELL+4;const isSelected=gemState.selected&&gemState.selected.x===x&&gemState.selected.y===y;ctx.fillStyle=isSelected?'rgba(255,255,255,0.15)':'rgba(255,255,255,0.05)';ctx.beginPath();ctx.roundRect(px,py,CELL-8,CELL-8,8);ctx.fill();if(isSelected){ctx.strokeStyle='rgba(255,255,255,0.6)';ctx.lineWidth=2;ctx.stroke();}ctx.fillStyle=GEM_COLORS[g];ctx.font=`bold ${CELL*0.5}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor=GEM_COLORS[g];ctx.shadowBlur=8;ctx.fillText(GEM_SYMBOLS[g],x*CELL+CELL/2,y*CELL+CELL/2);ctx.shadowBlur=0;}
+  ctx.strokeStyle='rgba(200,169,107,0.08)';ctx.lineWidth=1;for(let i=1;i<GRID_SIZE;i++){ctx.beginPath();ctx.moveTo(i*CELL,0);ctx.lineTo(i*CELL,canvas.height);ctx.stroke();ctx.beginPath();ctx.moveTo(0,i*CELL);ctx.lineTo(canvas.width,i*CELL);ctx.stroke();}
+  gemState.particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vx*=0.9;p.vy*=0.9;p.life--;ctx.globalAlpha=p.life/30;ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,3,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;});
+  gemState.particles=gemState.particles.filter(p=>p.life>0);
+  gemState.raf=requestAnimationFrame(gemLoop);
+}
+// ── SNAKE GAME ────────────────────────────────────────────
+const SNAKE_COLS=26,SNAKE_ROWS=26;
+let snakeState={snake:[],food:{x:0,y:0},dir:{x:1,y:0},nextDir:{x:1,y:0},score:0,highScore:parseInt(localStorage.getItem('snakeHi')||'0'),gameOver:false,interval:null,particles:[],canvas:null,ctx:null,raf:null};
+function initSnake(){
+  const canvas=document.getElementById('snake-canvas');if(!canvas)return;
+  snakeState.canvas=canvas;snakeState.ctx=canvas.getContext('2d');canvas.width=520;canvas.height=520;
+  snakeState.snake=[{x:13,y:13},{x:12,y:13},{x:11,y:13}];snakeState.dir={x:1,y:0};snakeState.nextDir={x:1,y:0};
+  snakeState.score=0;snakeState.gameOver=false;snakeState.particles=[];placeFood();updateSnakeHUD();
+  if(snakeState.interval)clearInterval(snakeState.interval);snakeState.interval=setInterval(snakeTick,140);
+  if(snakeState.raf)cancelAnimationFrame(snakeState.raf);snakeDrawLoop();
+}
+function placeFood(){const occupied=new Set(snakeState.snake.map(s=>`${s.x},${s.y}`));let fx,fy;do{fx=Math.floor(Math.random()*SNAKE_COLS);fy=Math.floor(Math.random()*SNAKE_ROWS);}while(occupied.has(`${fx},${fy}`));snakeState.food={x:fx,y:fy};}
+function snakeTick(){
+  if(snakeState.gameOver)return;snakeState.dir={...snakeState.nextDir};
+  const head={x:snakeState.snake[0].x+snakeState.dir.x,y:snakeState.snake[0].y+snakeState.dir.y};
+  if(head.x<0||head.x>=SNAKE_COLS||head.y<0||head.y>=SNAKE_ROWS){endSnake();return;}
+  if(snakeState.snake.some(s=>s.x===head.x&&s.y===head.y)){endSnake();return;}
+  snakeState.snake.unshift(head);
+  if(head.x===snakeState.food.x&&head.y===snakeState.food.y){snakeState.score+=10;playEat();const cw=520/SNAKE_COLS;const px=(snakeState.food.x+.5)*cw,py=(snakeState.food.y+.5)*cw;for(let i=0;i<8;i++)snakeState.particles.push({x:px,y:py,vx:(Math.random()-.5)*10,vy:(Math.random()-.5)*10,life:25,color:'#c8a96b'});placeFood();updateSnakeHUD();}
+  else{snakeState.snake.pop();}
+}
+function endSnake(){snakeState.gameOver=true;clearInterval(snakeState.interval);if(snakeState.score>snakeState.highScore){snakeState.highScore=snakeState.score;localStorage.setItem('snakeHi',snakeState.highScore);}playDefeat();updateSnakeHUD();}
+function restartSnake(){initSnake();}
+function setSnakeDir(dir){const map={UP:{x:0,y:-1},DOWN:{x:0,y:1},LEFT:{x:-1,y:0},RIGHT:{x:1,y:0}};const nd=map[dir];if(!nd)return;if(nd.x===-snakeState.dir.x&&nd.y===-snakeState.dir.y)return;snakeState.nextDir=nd;}
+function updateSnakeHUD(){const ss=document.getElementById('snake-score');const sh=document.getElementById('snake-hi');const sl=document.getElementById('snake-len');if(ss)ss.textContent=snakeState.score;if(sh)sh.textContent=snakeState.highScore;if(sl)sl.textContent=snakeState.snake.length;}
+function snakeDrawLoop(){
+  const ctx=snakeState.ctx;const canvas=snakeState.canvas;if(!ctx||!canvas)return;const cw=520/SNAKE_COLS;
+  ctx.fillStyle='#0a0806';ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.strokeStyle='rgba(200,169,107,0.06)';ctx.lineWidth=.5;for(let i=0;i<=SNAKE_COLS;i++){ctx.beginPath();ctx.moveTo(i*cw,0);ctx.lineTo(i*cw,canvas.height);ctx.stroke();}for(let j=0;j<=SNAKE_ROWS;j++){ctx.beginPath();ctx.moveTo(0,j*cw);ctx.lineTo(canvas.width,j*cw);ctx.stroke();}
+  snakeState.snake.forEach((seg,i)=>{const a=1-(i/snakeState.snake.length)*0.6;ctx.fillStyle=`rgba(200,169,107,${a})`;ctx.shadowColor='#c8a96b';ctx.shadowBlur=i===0?12:0;ctx.beginPath();ctx.roundRect(seg.x*cw+2,seg.y*cw+2,cw-4,cw-4,4);ctx.fill();ctx.shadowBlur=0;});
+  ctx.fillStyle='#b85454';ctx.shadowColor='#b85454';ctx.shadowBlur=16;ctx.font=`${cw*0.8}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('◈',(snakeState.food.x+.5)*cw,(snakeState.food.y+.5)*cw);ctx.shadowBlur=0;
+  snakeState.particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vx*=.85;p.vy*=.85;p.life--;ctx.globalAlpha=p.life/25;ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,2.5,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;});snakeState.particles=snakeState.particles.filter(p=>p.life>0);
+  if(snakeState.gameOver){ctx.fillStyle='rgba(0,0,0,0.7)';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#c8a96b';ctx.font='bold 2rem "Cinzel Decorative",serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('GAME OVER',canvas.width/2,canvas.height/2-20);ctx.font='1rem "EB Garamond",serif';ctx.fillStyle='#b8afa8';ctx.fillText(`Score: ${snakeState.score}`,canvas.width/2,canvas.height/2+20);}
+  snakeState.raf=requestAnimationFrame(snakeDrawLoop);
+}
+document.addEventListener('keydown',e=>{const m={ArrowUp:'UP',ArrowDown:'DOWN',ArrowLeft:'LEFT',ArrowRight:'RIGHT'};if(m[e.key]){e.preventDefault();setSnakeDir(m[e.key]);}});
+// ── COMMUNITY HUB ─────────────────────────────────────────
+(function injectCommCSS(){
+  if(document.getElementById('comm-hub-css'))return;
+  const s=document.createElement('style');s.id='comm-hub-css';
+  s.textContent=`@keyframes commWaveBar{0%,100%{transform:scaleY(.35);opacity:.6}50%{transform:scaleY(1);opacity:1}}@keyframes commFeedIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}.comm-feed-enter{animation:commFeedIn .22s ease forwards;}.voice-note-widget{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,#1a1208,#2a1e10);border:1px solid #c8a96b44;border-radius:8px;padding:10px 14px;margin:10px 0;max-width:320px;}.voice-note-icon{font-size:1rem;color:#c8a96b;}.voice-note-label{font-family:var(--font-alt,serif);font-size:.7rem;color:#c8a96b;letter-spacing:.08em;opacity:.85;white-space:nowrap;}.waveform-bars{display:flex;align-items:center;gap:2px;height:26px;flex:1;}.waveform-bar{width:3px;background:linear-gradient(180deg,#c8a96b,#8b6b3b);border-radius:2px;box-shadow:0 0 4px #c8a96b55;}.post-image-embed{margin:12px 0;border-radius:8px;overflow:hidden;border:1px solid var(--border,#3a3020);max-height:340px;background:#0a0a0a;display:flex;align-items:center;justify-content:center;}.post-image-embed img{width:100%;max-height:340px;object-fit:cover;display:block;}.reply-thread{border-left:2px solid var(--border,#3a3020);margin-left:20px;padding-left:12px;margin-top:8px;}.nested-comment{margin-bottom:8px;}.nested-comment strong{font-size:.78rem;color:var(--gold3,#9a7a4a);}.nested-comment p{font-size:.82rem;color:var(--text2,#b8afa8);margin:2px 0 0;}.reply-toggle-btn{background:none;border:none;color:var(--gold3,#9a7a4a);font-size:.7rem;cursor:pointer;padding:3px 0;font-family:var(--font-body,serif);letter-spacing:.04em;}.reply-toggle-btn:hover{color:var(--gold,#c8a96b);}.nested-reply-form{display:none;margin-top:6px;gap:6px;align-items:center;}.nested-reply-form.open{display:flex;}.comm-item{cursor:pointer;border-left:2px solid transparent;transition:background .15s,border-color .15s;}.comm-item.active{background:rgba(200,169,107,.08)!important;border-left-color:var(--gold,#c8a96b)!important;}.comm-item:hover:not(.active){background:rgba(200,169,107,.04);}.voice-attach-btn{background:none;border:1px solid var(--border,#3a3020);color:var(--gold3,#9a7a4a);font-size:.78rem;padding:7px 14px;border-radius:6px;cursor:pointer;font-family:var(--font-body,serif);transition:border-color .15s,color .15s;}.voice-attach-btn:hover,.voice-attach-btn.active{border-color:var(--gold,#c8a96b);color:var(--gold,#c8a96b);}`;
+  document.head.appendChild(s);
+})();
+const communityFeeds={
+  'dark-academia':{id:'dark-academia',icon:'🌑',name:'Dark Academia Lore',desc:'Gothic scholarship and the pursuit of forbidden knowledge.',tag:'#DarkAcademia',members:12847,joined:false,posts:[{id:'da-p1',username:'E.Blackwood',avatarSeed:'EB',title:"Dante's Moral Architecture",content:"Just finished rereading The Divine Comedy for the fifth time. Dante's understanding of moral architecture surpasses anything in the modern tradition. The Inferno is philosophy as architecture — each sin precisely located in a structural system of justice that Aristotle would have recognized.",imageUrl:'',audioPlaceholder:false,createdAt:'2h ago',likes:47,comments:[{id:'da-p1-c1',username:'L.Ashford',avatarSeed:'LA',text:"His precision in placing sins according to severity is extraordinary — Aristotelian taxonomy made luminous poetry.",createdAt:'1h ago',likes:12,replies:[{id:'da-p1-c1-r1',username:'M.Blackthorn',avatarSeed:'MB',text:"The contrapasso principle is one of the most elegant ideas in literary history.",createdAt:'45m ago',likes:8}]},{id:'da-p1-c2',username:'H.Vane',avatarSeed:'HV',text:"Beatrice as allegory of divine knowledge has always struck me as more interesting than Virgil's role.",createdAt:'30m ago',likes:9,replies:[]}]},{id:'da-p2',username:'C.Nightshade',avatarSeed:'CN',title:"Secret Libraries and Forbidden Texts",content:"The idea of the bibliotheca abscondita — the hidden library — runs through Western esotericism from Alexandrian archives to Eco's monastery in The Name of the Rose.",imageUrl:'',audioPlaceholder:false,createdAt:'5h ago',likes:93,comments:[{id:'da-p2-c1',username:'T.Ashcroft',avatarSeed:'TA',text:"The Index Librorum Prohibitorum is just the Church's attempt to be keeper of its own forbidden catalogue. Every prohibition is also an advertisement.",createdAt:'4h ago',likes:31,replies:[{id:'da-p2-c1-r1',username:'E.Blackwood',avatarSeed:'EB',text:"Borges understood this completely. Every library is already a labyrinth; every labyrinth is already a library.",createdAt:'3h ago',likes:18}]}]},{id:'da-p3',username:'R.Duskmore',avatarSeed:'RD',title:"The Scholar's Melancholy: Burton to Keats",content:"Robert Burton's Anatomy of Melancholy is the most ambitious scholarly failure in English letters — a 1,400-page attempt to categorize every form of human sadness.",imageUrl:'',audioPlaceholder:false,createdAt:'1d ago',likes:128,comments:[{id:'da-p3-c1',username:'I.Greaves',avatarSeed:'IG',text:"Keats's negative capability is Burton's melancholy restated in Romantic terms.",createdAt:'22h ago',likes:44,replies:[]}]}]},
+  'gothic-fiction':{id:'gothic-fiction',icon:'🦇',name:'Gothic Fiction',desc:'All things dark, atmospheric, and sublime in literature.',tag:'#Gothic',members:8432,joined:false,posts:[{id:'gf-p1',username:'V.Crowe',avatarSeed:'VC',title:"Stoker's Dracula as Imperial Anxiety",content:"Reading Dracula again through a postcolonial lens. The Count isn't just a supernatural threat — he's everything the Victorian Empire feared might come back from the periphery to colonize the center.",imageUrl:'',audioPlaceholder:false,createdAt:'3h ago',likes:74,comments:[{id:'gf-p1-c1',username:'P.Holloway',avatarSeed:'PH',text:"The epistolary form amplifies this — every voice in the novel is trying to rationalize and classify the threat.",createdAt:'2h ago',likes:28,replies:[{id:'gf-p1-c1-r1',username:'V.Crowe',avatarSeed:'VC',text:"Van Helsing is the perfect figure — the Continental expert called in to explain what English rationalism can't handle.",createdAt:'1h ago',likes:15}]}]},{id:'gf-p2',username:'W.Dreadmoor',avatarSeed:'WD',title:"Ann Radcliffe and the Aesthetics of Terror",content:"Radcliffe's distinction between terror and horror — terror dilates the soul, horror contracts and paralyzes — is the most useful critical distinction in the Gothic tradition.",imageUrl:'',audioPlaceholder:false,createdAt:'7h ago',likes:112,comments:[{id:'gf-p2-c1',username:'O.Graymere',avatarSeed:'OG',text:"This is why Shirley Jackson is superior to most contemporary horror — she operates entirely in Radcliffe's terror register.",createdAt:'6h ago',likes:56,replies:[]}]}]},
+  'alchemical-research':{id:'alchemical-research',icon:'⚗️',name:'Alchemical Research',desc:'The intersection of science, mysticism, and the written word.',tag:'#Alchemy',members:4219,joined:false,posts:[{id:'ar-p1',username:'B.Cauldwell',avatarSeed:'BC',title:"Faust and the Alchemical Imagination",content:"Goethe's Faust is misread when reduced to a simple bargain story. The deeper structure is alchemical: Faust seeks the Philosopher's Stone through intellectual rather than material transmutation.",imageUrl:'',audioPlaceholder:false,createdAt:'4h ago',likes:63,comments:[{id:'ar-p1-c1',username:'H.Crucible',avatarSeed:'HC',text:"Mephistopheles as Mercury — the trickster catalyst — fits perfectly. He doesn't create the transformation; he's the necessary agent.",createdAt:'3h ago',likes:24,replies:[]}]},{id:'ar-p2',username:'S.Quicksilver',avatarSeed:'SQ',title:"Jung's Psychology and the Alchemical Texts",content:"Just finished Jung's Mysterium Coniunctionis and the layers of cross-reference between medieval alchemy and his psychological theory are staggering.",imageUrl:'',audioPlaceholder:false,createdAt:'9h ago',likes:88,comments:[{id:'ar-p2-c1',username:'P.Alkahest',avatarSeed:'PA',text:"The albedo-nigredo-rubedo sequence is the clearest articulation of what depression and integration feel like from the inside.",createdAt:'8h ago',likes:35,replies:[]}]}]},
+  'author-spotlights':{id:'author-spotlights',icon:'✍️',name:'Author Spotlights',desc:'Deep dives into the lives and craft of literary masters.',tag:'#Authors',members:6731,joined:false,posts:[{id:'as-p1',username:'M.Quillsby',avatarSeed:'MQ',title:"Virginia Woolf's Compositional Notebooks",content:"Woolf's working notebooks reveal a compositional process that's almost musical. She worked in themes and motifs before she worked in sentences.",imageUrl:'',audioPlaceholder:false,createdAt:'6h ago',likes:91,comments:[{id:'as-p1-c1',username:'A.Fernshaw',avatarSeed:'AF',text:"Her diaries are a continuous workshop for the novels.",createdAt:'5h ago',likes:37,replies:[{id:'as-p1-c1-r1',username:'M.Quillsby',avatarSeed:'MQ',text:"The diary entry for completion of The Waves is the most moving account of artistic achievement I know.",createdAt:'4h ago',likes:29}]}]},{id:'as-p2',username:'T.Dovecott',avatarSeed:'TD',title:"Kafka's Aphorisms: The Zurau Notebooks",content:"The 109 aphorisms Kafka wrote during his tuberculosis convalescence are the most concentrated expression of his thought outside the fiction.",imageUrl:'',audioPlaceholder:false,createdAt:'11h ago',likes:117,comments:[{id:'as-p2-c1',username:'G.Labyrinthe',avatarSeed:'GL',text:"The aphorisms read differently after the fiction — they're almost solutions to the problems the fiction poses.",createdAt:'10h ago',likes:49,replies:[]}]}]},
+  'rare-manuscripts':{id:'rare-manuscripts',icon:'📜',name:'Rare Manuscript Collections',desc:'Collectors and curators of physical editions and antiquarian books.',tag:'#RareBooks',members:3108,joined:false,posts:[{id:'rm-p1',username:'P.Vellum',avatarSeed:'PV',title:"On the Physical Object: The Book as Artifact",content:"There's an argument that the ebook has clarified rather than threatened the physical book. When content is free from its material substrate, the material substrate becomes purely itself.",imageUrl:'',audioPlaceholder:false,createdAt:'8h ago',likes:56,comments:[{id:'rm-p1-c1',username:'A.Bindery',avatarSeed:'AB',text:"The Kelmscott Press understood this a century before the ebook.",createdAt:'7h ago',likes:28,replies:[]}]},{id:'rm-p2',username:'N.Incunabula',avatarSeed:'NI',title:"On Acquiring a Gutenberg Bible Leaf",content:"Finally completed the acquisition of a single leaf from a 1454-55 Gutenberg Bible. Gutenberg's genius was to mimic the handwritten page so precisely that buyers wouldn't feel they were getting something lesser.",imageUrl:'',audioPlaceholder:false,createdAt:'5d ago',likes:201,comments:[{id:'rm-p2-c1',username:'P.Vellum',avatarSeed:'PV',text:"The rubricators who added red initial capitals by hand after printing — the hybrid moment where manuscript tradition meets mechanical reproduction.",createdAt:'5d ago',likes:78,replies:[]}]}]},
+  'hybrid-reading-guild':{id:'hybrid-reading-guild',icon:'📚',name:'Hybrid Reading Guild',desc:'Cross-genre explorers charting unexpected literary territories.',tag:'#HybridReaders',members:9224,joined:false,posts:[{id:'hg-p1',username:'K.Traverse',avatarSeed:'KT',title:"Magic Realism as Political Necessity",content:"García Márquez always insisted that magic realism wasn't a stylistic choice — it was the only accurate way to describe Colombian reality.",imageUrl:'',audioPlaceholder:false,createdAt:'5h ago',likes:156,comments:[{id:'hg-p1-c1',username:'D.Crossroads',avatarSeed:'DC',text:"This is Rushdie's argument too — magic realism is the literature of nations that official history has erased.",createdAt:'4h ago',likes:63,replies:[]}]},{id:'hg-p2',username:'J.Omnivore',avatarSeed:'JO',title:"The Philosophy-Fiction Interface",content:"For those who want to trace the exact border where philosophy becomes fiction: start with Plato's Republic, move through Candide, Notes from Underground, Nausea, The Stranger, then The Unbearable Lightness of Being.",imageUrl:'',audioPlaceholder:false,createdAt:'2d ago',likes:177,comments:[{id:'hg-p2-c1',username:'B.Gloss',avatarSeed:'BG',text:"I'd insert Borges' Labyrinths between Nausea and The Stranger.",createdAt:'2d ago',likes:69,replies:[]}]}]}
+};
+const COMMUNITY_ORDER=['dark-academia','gothic-fiction','alchemical-research','author-spotlights','rare-manuscripts','hybrid-reading-guild'];
+const userCommunities=new Set();
+state.currentCommunity='dark-academia';
+function _commPlayChannel(){playNote(660,'sine',.2,.1);setTimeout(()=>playNote(880,'sine',.12,.08),90);}
+function _commPlayJoin(){[523,659,784].forEach((f,i)=>setTimeout(()=>playNote(f,'sine',.3,.1),i*70));}
+function _commPlayPost(){playBell();setTimeout(()=>playNote(1047,'sine',.2,.08),110);}
+function _commPlayCreate(){playChime();}
+function _getComm(id){return communityFeeds[id];}
+function _authorName(){return state.user?state.user.name:'Anonymous Scholar';}
+function _uid(){return 'u'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
+function _ts(){return 'just now';}
+function _waveformSVG(){const heights=[40,65,30,80,55,90,35,70,50,85,45,75,60,40,80,55,35,70,65,50];const bars=heights.map((h,i)=>{const delay=(i*0.07).toFixed(2);return `<div class="waveform-bar" style="height:${h}%;animation:commWaveBar ${(.8+i%4*.15).toFixed(2)}s ease-in-out ${delay}s infinite;"></div>`;}).join('');return `<div class="voice-note-widget"><span class="voice-note-icon">🎙</span><div class="waveform-bars">${bars}</div><span class="voice-note-label">Voice Note Attached</span></div>`;}
+function _renderComments(comments,cid,pid){if(!comments||!comments.length)return'';return comments.map(c=>{const replies=(c.replies||[]).map(r=>`<div class="nested-comment"><strong>${r.username}</strong><p>${r.text}</p><span style="font-size:.65rem;color:var(--text3)">${r.createdAt} · ♥ ${r.likes}</span></div>`).join('');return `<div class="comment-item" id="ci-${c.id}"><div style="display:flex;align-items:baseline;gap:8px"><strong style="font-size:.82rem;color:var(--gold3)">${c.username}</strong><span style="font-size:.65rem;color:var(--text3)">${c.createdAt} · ♥ ${c.likes}</span></div><p style="margin:3px 0 5px;font-size:.88rem">${c.text}</p><button class="reply-toggle-btn" onclick="window.toggleReplyForm('${c.id}')">↩ Reply</button><div class="nested-reply-form" id="rf-${c.id}"><input class="comment-input" style="flex:1;font-size:.78rem;padding:6px 10px" id="ri-${c.id}" placeholder="Your reply..."><button class="btn-primary" style="font-size:.72rem;padding:6px 12px;white-space:nowrap" onclick="window.submitNestedReply('${cid}','${pid}','${c.id}')">Post</button></div>${replies?`<div class="reply-thread">${replies}</div>`:''}</div>`;}).join('');}
+function _renderPost(p,cid){const imgHtml=p.imageUrl?`<div class="post-image-embed"><img src="${p.imageUrl}" alt="Post image" loading="lazy" onerror="this.parentElement.style.display='none'"></div>`:'';const audioHtml=p.audioPlaceholder?_waveformSVG():'';return `<div class="post-card" id="pcard-${p.id}"><div class="post-header"><div class="post-avatar">${p.avatarSeed.slice(0,2)}</div><div><div class="post-author">${p.username}</div><div class="post-time">${p.createdAt} · ${_getComm(cid).tag}</div></div></div>${p.title?`<div class="post-title">${p.title}</div>`:''}<p class="post-body">${p.content}</p>${imgHtml}${audioHtml}<div class="post-actions"><button class="post-action-btn" id="like-${p.id}" onclick="window.likePost('${cid}','${p.id}')">♥ ${p.likes}</button><button class="post-action-btn" onclick="window.toggleComments('${cid}','${p.id}')">💬 ${p.comments.length} Comment${p.comments.length!==1?'s':''}</button></div><div class="comment-box" id="cb-${p.id}" style="display:none"><div id="comments-inner-${p.id}">${_renderComments(p.comments,cid,p.id)}</div><div style="display:flex;gap:8px;margin-top:12px"><input type="text" class="comment-input" id="ci-root-${p.id}" placeholder="Add a scholarly remark..."><button class="btn-primary" style="font-size:.75rem;padding:8px 14px;white-space:nowrap" onclick="window.addComment('${cid}','${p.id}')">Post</button></div></div></div>`;}
+function _renderPostForm(cid){return `<div class="section-box mt-24" id="post-form-box"><div style="font-family:var(--font-sub);font-size:.78rem;letter-spacing:.12em;color:var(--gold3);text-transform:uppercase;margin-bottom:16px">Share Your Thoughts</div><div class="form-group"><input type="text" id="new-post-title" class="form-input" placeholder="Post title..."></div><div class="form-group"><textarea id="new-post-body" class="form-input" rows="4" placeholder="What wisdom do you wish to share with the community?"></textarea></div><div class="form-group"><input type="url" id="new-post-image" class="form-input" placeholder="Image URL (optional)"></div><div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><button class="voice-attach-btn" id="voice-attach-btn" onclick="window.toggleVoiceAttachment()">🎙 Attach Voice Note</button><span id="voice-attach-status" style="font-size:.72rem;color:var(--text3);font-family:var(--font-alt);font-style:italic"></span></div><div id="voice-preview-area"></div><button class="btn-primary" style="font-size:.82rem;padding:12px 24px" onclick="window.publishCommunityPost('${cid}')">✦ Publish Post</button></div>`;}
+function renderCommunity(){const list=document.getElementById('comm-list');if(list)list.innerHTML=COMMUNITY_ORDER.map(id=>{const c=communityFeeds[id];if(!c)return'';const isActive=state.currentCommunity===id;const isJoined=userCommunities.has(id);return `<div class="comm-item${isActive?' active':''}" onclick="window.changeChannel('${id}')"><div class="comm-icon">${c.icon}</div><div style="flex:1;min-width:0"><div class="comm-name">${c.name}</div><div class="comm-members">${c.members.toLocaleString()} members · ${isJoined?'<span style="color:var(--gold3)">✓ Joined</span>':c.tag}</div></div></div>`;}).join('');renderCommFeed();}
+function renderCommFeed(){const feed=document.getElementById('comm-feed');if(!feed)return;const cid=state.currentCommunity;const comm=communityFeeds[cid];if(!comm){feed.innerHTML='<p style="color:var(--text3);padding:20px">Community not found.</p>';return;}const isJoined=userCommunities.has(cid);const joinBtn=isJoined?`<button class="btn-ghost" style="margin-left:auto;font-size:.78rem;padding:8px 16px;color:var(--gold3);border-color:var(--gold3)" disabled>✓ Joined</button>`:`<button class="btn-ghost" style="margin-left:auto;font-size:.78rem;padding:8px 16px" onclick="window.joinCommunity('${cid}')">Join ✦</button>`;const postsHtml=comm.posts.length?comm.posts.map(p=>_renderPost(p,cid)).join(''):`<div style="text-align:center;padding:40px 20px;color:var(--text3);font-family:var(--font-alt);font-style:italic">No posts yet. Be the first to share your thoughts.</div>`;feed.innerHTML=`<div class="comm-feed-enter"><div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)"><div style="font-size:2rem">${comm.icon}</div><div><h3 style="font-family:var(--font-sub);font-size:1.1rem;color:var(--text)">${comm.name}</h3><p style="font-size:.85rem;color:var(--text3);margin-top:3px">${comm.desc}</p><p style="font-size:.75rem;color:var(--gold3);margin-top:3px">${comm.members.toLocaleString()} members · ${comm.tag}</p></div>${joinBtn}</div>${postsHtml}${_renderPostForm(cid)}</div>`;}
+function changeChannel(id){if(!communityFeeds[id])return;state.currentCommunity=id;_commPlayChannel();document.querySelectorAll('#comm-list .comm-item').forEach(el=>{const onclick=el.getAttribute('onclick')||'';el.classList.toggle('active',onclick.includes(`'${id}'`));});const feed=document.getElementById('comm-feed');if(feed)feed.scrollTop=0;renderCommFeed();}
+function selectCommunity(id){changeChannel(id);}
+function likePost(cid,pid){const comm=communityFeeds[cid];if(!comm)return;const post=comm.posts.find(p=>p.id===pid);if(!post)return;post.likes++;const btn=document.getElementById('like-'+pid);if(btn)btn.textContent='♥ '+post.likes;}
+function toggleComments(cid,pid){const el=document.getElementById('cb-'+pid);if(el)el.style.display=el.style.display==='none'?'block':'none';}
+function toggleReplyForm(commentId){const el=document.getElementById('rf-'+commentId);if(!el)return;el.classList.toggle('open');if(el.classList.contains('open')){const inp=document.getElementById('ri-'+commentId);if(inp)inp.focus();}}
+function addComment(cid,pid){const comm=communityFeeds[cid];if(!comm)return;const post=comm.posts.find(p=>p.id===pid);if(!post)return;const input=document.getElementById('ci-root-'+pid);if(!input||!input.value.trim())return;const newComment={id:_uid(),username:_authorName(),avatarSeed:_authorName().slice(0,2),text:input.value.trim(),createdAt:_ts(),likes:0,replies:[]};post.comments.push(newComment);input.value='';_commPlayPost();const inner=document.getElementById('comments-inner-'+pid);if(inner)inner.innerHTML=_renderComments(post.comments,cid,pid);}
+function submitNestedReply(cid,pid,commentId){const comm=communityFeeds[cid];if(!comm)return;const post=comm.posts.find(p=>p.id===pid);if(!post)return;const comment=post.comments.find(c=>c.id===commentId);if(!comment)return;const input=document.getElementById('ri-'+commentId);if(!input||!input.value.trim())return;comment.replies.push({id:_uid(),username:_authorName(),avatarSeed:_authorName().slice(0,2),text:input.value.trim(),createdAt:_ts(),likes:0});input.value='';_commPlayPost();const inner=document.getElementById('comments-inner-'+pid);if(inner)inner.innerHTML=_renderComments(post.comments,cid,pid);}
+let _voiceAttached=false;
+function toggleVoiceAttachment(){_voiceAttached=!_voiceAttached;const btn=document.getElementById('voice-attach-btn');const status=document.getElementById('voice-attach-status');const preview=document.getElementById('voice-preview-area');if(btn)btn.classList.toggle('active',_voiceAttached);if(status)status.textContent=_voiceAttached?'Voice note will be attached to your post':'';if(preview)preview.innerHTML=_voiceAttached?_waveformSVG():'';playNote(_voiceAttached?784:523,'sine',.2,.08);}
+function publishCommunityPost(cid){const comm=communityFeeds[cid];if(!comm){showToast('Community not found','danger');return;}const titleEl=document.getElementById('new-post-title');const bodyEl=document.getElementById('new-post-body');const imageEl=document.getElementById('new-post-image');const title=(titleEl?titleEl.value:'').trim();const content=(bodyEl?bodyEl.value:'').trim();const imageUrl=(imageEl?imageEl.value:'').trim();if(!content){showToast('Write something first','danger');return;}const newPost={id:_uid(),username:_authorName(),avatarSeed:_authorName().slice(0,2),title:title||'Untitled',content,imageUrl,audioPlaceholder:_voiceAttached,createdAt:_ts(),likes:0,comments:[]};comm.posts.unshift(newPost);comm.members++;_voiceAttached=false;_commPlayPost();showToast('Post published to '+comm.name,'success');renderCommFeed();}
+function createPost(cid){publishCommunityPost(cid);}
+function joinCommunity(id){const comm=communityFeeds[id];if(!comm)return;if(userCommunities.has(id)){showToast('Already a member of '+comm.name,'info');return;}userCommunities.add(id);comm.members++;_commPlayJoin();showToast('Joined '+comm.name,'success');state.currentCommunity=id;renderCommunity();}
+function showCreateComm(){const panel=document.getElementById('create-comm-panel');if(!panel)return;const isHidden=panel.style.display==='none'||!panel.style.display;panel.style.display=isHidden?'block':'none';const feed=document.getElementById('comm-feed');if(feed)feed.style.display=isHidden?'none':'block';}
+function createCommunity(){const nameEl=document.getElementById('new-comm-name');const descEl=document.getElementById('new-comm-desc');const tagEl=document.getElementById('new-comm-tag');const name=(nameEl?nameEl.value:'').trim();const desc=(descEl?descEl.value:'').trim();let tag=(tagEl?tagEl.value:'').trim()||'#New';if(!tag.startsWith('#'))tag='#'+tag;if(!name){showToast('Community needs a name','danger');return;}const icons=['🌟','🔮','⚡','🌙','🏺','🗝️','🔱','🌿'];const existingIds=Object.keys(communityFeeds);const icon=icons[existingIds.length%icons.length];const newId='custom-'+name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,32)+'-'+Date.now().toString(36);communityFeeds[newId]={id:newId,icon,name,desc:desc||'A new scholarly community.',tag,members:1,joined:true,posts:[]};COMMUNITY_ORDER.push(newId);userCommunities.add(newId);state.currentCommunity=newId;_commPlayCreate();showToast(`"${name}" has been established`,'success');if(nameEl)nameEl.value='';if(descEl)descEl.value='';if(tagEl)tagEl.value='';const panel=document.getElementById('create-comm-panel');if(panel)panel.style.display='none';const feed=document.getElementById('comm-feed');if(feed)feed.style.display='block';renderCommunity();}
+// ── AI COMPANION ──────────────────────────────────────────
+function toggleAI(){const panel=document.getElementById('ai-panel');panel.classList.toggle('open');}
+function sendAI(){const input=document.getElementById('ai-input');const msg=(input.value||'').trim();if(!msg)return;input.value='';appendAIMsg(msg,'user');setTimeout(()=>{const reply=processAI(msg);appendAIMsg(reply,'bot');playNote(523,'sine',.2,.08);},400);}
+function appendAIMsg(text,role){const msgs=document.getElementById('ai-messages');const div=document.createElement('div');div.className='ai-msg '+role;div.innerHTML=`<div class="ai-msg-bubble">${text}</div>`;msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;}
+function processAI(msg){
+  const lower=msg.toLowerCase().trim();
+  if(state.chatState==='awaiting_confirmation'){if(/^(yes|y|yeah|confirm|proceed|sure)$/i.test(lower)){const id=state.pendingBookId;state.pendingBookId=null;state.pendingBookTitle=null;state.chatState='idle';window.switchTab('detail');setTimeout(()=>window.openBook(id),50);return 'As you wish. Transporting your consciousness to the Tome Chronicles now...';}if(/^(no|n|nope|cancel|stay)$/i.test(lower)){state.pendingBookId=null;state.pendingBookTitle=null;state.chatState='idle';return 'Understood. We shall remain anchored right here in our current chamber.';}return "I await a clearer answer, scholar. Please reply with either 'Yes' or 'No'.";}
+  if(lower.includes('cart')||lower.includes('ledger')){window.switchTab('cart');return 'Opening the Alchemist\'s Cart Ledger for you...';}
+  if(lower.includes('track')||lower.includes('order')||lower.includes('owl')){window.switchTab('tracker');return 'Navigating to the Owl Post Tracker...';}
+  if(lower.includes('community')||lower.includes('scholar')){window.switchTab('community');return 'Taking you to the Community Hub...';}
+  if(lower.includes('streak')||lower.includes('xp')||lower.includes('vow')){window.switchTab('streak');return 'Opening the Scholar\'s Vow Terminal...';}
+  if(lower.includes('notebook')||lower.includes('note')){window.switchTab('notebook');return 'Opening the Reader\'s Notebook Hub...';}
+  if(lower.includes('currency')||lower.includes('inr')||lower.includes('usd')){window.switchTab('currency');return 'Taking you to the Currency Vault...';}
+  if(lower.includes('game')||lower.includes('gem')||lower.includes('match')){window.switchTab('gem');return 'Opening the Gem Sanctuary game...';}
+  if(lower.includes('snake')||lower.includes('serpent')){window.switchTab('snake');return 'Loading the Ink Scribe\'s Serpent...';}
+  const exactMatch=BOOKS.find(b=>b.title.toLowerCase().includes(lower)||b.author.toLowerCase().includes(lower));
+  if(exactMatch){state.pendingBookId=exactMatch.id;state.pendingBookTitle=exactMatch.title;state.chatState='awaiting_confirmation';return `I have located '${exactMatch.title}' within the Whispering Shelves! Would you like me to transport you directly to its chronicle page? Please reply with 'Yes' or 'No'.`;}
+  const genres=['gothic','philosophy','horror','fiction','poetry','drama','adventure','mystery','dystop'];
+  for(const g of genres){if(lower.includes(g)){const matches=BOOKS.filter(b=>b.genre.toLowerCase().includes(g)||b.emotionalPrescription.toLowerCase().includes(g)).slice(0,3);if(matches.length){window.switchTab('shelves');return `I found some ${g} tomes for you: ${matches.map(b=>b.title).join(', ')}. Opening the Shelves now...`;}}}
+  const emotionMap={spooky:'Thrilling',dark:'Melancholic',philosophical:'Philosophical',sad:'Melancholic',exciting:'Thrilling',transcendent:'Transcendent',cathartic:'Cathartic',melancholic:'Melancholic'};
+  for(const [e,mapped] of Object.entries(emotionMap)){if(lower.includes(e)){const matches=BOOKS.filter(b=>b.emotionalPrescription.toLowerCase()===mapped.toLowerCase()).slice(0,3);if(matches.length)return `For a ${e} reading experience, I recommend: ${matches.map(b=>b.title).join(', ')}. Shall I open the catalog?`;}}
+  if(lower.length>2&&!lower.includes('help')&&!lower.includes('how')){const looksLikeSearch=lower.split(' ').length<=6&&!lower.includes('?');if(looksLikeSearch)return 'Our current archives do not contain that particular manuscript, fellow scholar. May I assist you in finding another title?';}
+  if(lower.includes('help')||lower.includes('how')){return 'I can help you: search for books by title or author, browse by genre or mood, navigate any screen, or track orders. Just ask me anything!';}
+  const responses=['The archives hold much wisdom. Could you be more specific in your query?','I sense you seek knowledge. Browse the Whispering Shelves for our complete collection.','The Sanctum offers 105 curated volumes. Tell me your mood and I shall guide you.','Your curiosity is noted, Scholar. Ask me to find books, navigate, or answer questions.','The oracle consults the deep archives... Speak your request more precisely.'];
+  return responses[Math.floor(Math.random()*responses.length)];
+}
+// ── INIT ──────────────────────────────────────────────────
+function initSanctuary(){
+  initAudio();playVictory();
+  document.getElementById('audio-modal').style.display='none';
+  document.getElementById('nav').style.display='block';
+  buildCatalog();buildCarousel();initParticles();renderAuth();renderStreak();renderNotebook();renderCurrencyScreen();renderCommunity();updateCartBadge();
+  document.addEventListener('click',e=>{if(!e.target.closest('.search-wrap'))document.getElementById('hero-search-results').classList.remove('open');});
+  showToast('✦ Welcome to Maesterify — The Book Sanctuary','success');
+}
+// ── EXPORTS ───────────────────────────────────────────────
+return{
+  initSanctuary,switchTab,showToast,
+  addToCart,removeFromCart,changeQty,applyCoupon,setPayTab,checkout,
+  openBook,selectFormat,heroSearch,filterByEmotion,applyFilters,clearFilters,moveCarousel,
+  toggleCurrency,incrementStreak,saveNote,addReadingHours,renderTracker,
+  doAuth,authToggle,logout,
+  // ── NEW: address exports ──
+  toggleAddressForm,saveAddress,setDefaultAddress,deleteAddress,
+  initGem,restartGem,initSnake,restartSnake,setSnakeDir,
+  communityFeeds,userCommunities,changeChannel,selectCommunity,
+  likePost,toggleComments,toggleReplyForm,addComment,submitNestedReply,
+  publishCommunityPost,createPost,toggleVoiceAttachment,
+  joinCommunity,createCommunity,showCreateComm,
+  toggleAI,sendAI,wishlistBook,BOOKS,state,fmt
+};
+})();
+(function(){
+  const E=window.MaesterifyEngine;
+  const keys=['initSanctuary','switchTab','showToast','addToCart','removeFromCart','changeQty','applyCoupon','setPayTab','checkout','openBook','selectFormat','heroSearch','filterByEmotion','applyFilters','clearFilters','moveCarousel','toggleCurrency','incrementStreak','saveNote','addReadingHours','renderTracker','doAuth','authToggle','logout',
+  'toggleAddressForm','saveAddress','setDefaultAddress','deleteAddress',
+  'initGem','restartGem','initSnake','restartSnake','setSnakeDir','changeChannel','selectCommunity','likePost','toggleComments','toggleReplyForm','addComment','submitNestedReply','publishCommunityPost','createPost','toggleVoiceAttachment','joinCommunity','createCommunity','showCreateComm','toggleAI','sendAI','wishlistBook'];
+  keys.forEach(k=>{if(E[k])window[k]=E[k];});
+})();
+</script>
+<script>
+// GLOBAL ERROR SHIELD: Prevents execution crashes during render
+(function() {
+    console.log("Maesterify: Initializing Data-Sanitization Shield...");
+    const originalToLowerCase = String.prototype.toLowerCase;
+    String.prototype.toLowerCase = function() {
+        if (this === undefined || this === null) return "";
+        try { return originalToLowerCase.call(this); } catch(e) { return ""; }
+    };
+})();
+</script>
+
+</body>
+</html>

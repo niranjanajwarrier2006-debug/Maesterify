@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom background pattern for your cartography tracking grid */
+.pattern-grid {
+  background-size: 20px 20px;
+  background-image: linear-gradient(to right, #2d251e 1px, transparent 1px),
+                    linear-gradient(to bottom, #2d251e 1px, transparent 1px);
+}
