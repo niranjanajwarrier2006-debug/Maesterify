@@ -2,6 +2,8 @@
 
 A high-fidelity digital book sanctuary designed for the Dark Academia aesthetic. Maesterify bridges the gap between traditional retail and immersive community reading.
 
+Demo video: https://drive.google.com/file/d/1xV3syTA-V2v-MDO-_uZd-qeGW3aqb2ss/view?usp=sharing
+
 ## ✨ Features
 * **Whispering Shelves:** A curated catalog interface for historical literature.
 * **Arcade:** Integrated mini-games for user retention.
